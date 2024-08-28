@@ -12,7 +12,8 @@
 				"PaperZD",
 				"Engine",
 				"GameplayAbilities",
-				"EnhancedInput"
+				"EnhancedInput",
+				"GameplayTags"
 			]
 		}
 	],

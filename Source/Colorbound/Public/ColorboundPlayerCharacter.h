@@ -9,6 +9,7 @@
 
 class UColorboundAbilitySet;
 class UColorboundInputConfig;
+struct FInputActionValue;
 
 /**
  * 
@@ -22,6 +23,7 @@ private:
 	void InitAbilitySystemComponent();
 
 protected:
+	virtual void BeginPlay() override;
 	void InputAbilityInputTagPressed(FGameplayTag InputTag);
 	void InputAbilityInputTagReleased(FGameplayTag InputTag);
 
@@ -36,5 +38,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InputSystem|Input")
 	class UInputMappingContext* DefaultMappingContext;
+
+	void Input_Move(const FInputActionValue& InputActionValue);
 
 };

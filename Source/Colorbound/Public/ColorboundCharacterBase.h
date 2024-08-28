@@ -32,8 +32,21 @@ public:
 	**/
 	UFUNCTION(BlueprintCallable, Category = "Colorbound|Attributes")
 	int32 GetCharacterLevel() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Colorbound|Axis")
+	FVector2D GetForwardVector() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Colorbound|Axis")
+	FVector2D GetRightVector() const;
 	
 protected:
+
+	UPROPERTY(BlueprintReadOnly, Category = "Colorbound|Axis")
+	FVector2D ForwardVector = FVector2D(1,0);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Colorbound|Axis")
+	FVector2D RightVector = FVector2D(0,-1);
+
 	UPROPERTY()
 	TObjectPtr<UColorboundAbilitySystemComponent> AbilitySystemComponent;
 

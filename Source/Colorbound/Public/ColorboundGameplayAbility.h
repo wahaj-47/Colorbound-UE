@@ -6,6 +6,8 @@
 #include "Abilities/GameplayAbility.h"
 #include "ColorboundGameplayAbility.generated.h"
 
+class AColorboundCharacterBase;
+
 /**
  * Defines how ability is meant to activate
  */
@@ -30,5 +32,8 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability Activation")
 	EColorboundAbilityActivationPolicy ActivationPolicy;
+
+	UFUNCTION(BlueprintCallable, Category = "Lyra|Ability")
+	AColorboundCharacterBase* GetColorboundCharacterFromActorInfo() const;
 	
 };

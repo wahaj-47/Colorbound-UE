@@ -35,3 +35,13 @@ void AColorboundCharacterBase::InitializeAbilitySet()
 		AbilitySet->GiveToAbilitySystem(ASC, nullptr, this);
 	}
 }
+
+FVector2D AColorboundCharacterBase::GetForwardVector() const
+{
+	return ForwardVector;
+}
+
+FVector2D AColorboundCharacterBase::GetRightVector() const
+{
+	return RightVector;
+}

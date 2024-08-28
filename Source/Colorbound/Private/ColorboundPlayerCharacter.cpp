@@ -6,6 +6,8 @@
 #include "ColorboundAbilitySystemComponent.h"
 #include "ColorboundAttributeSet.h"
 #include "ColorboundInputComponent.h"
+#include "ColorboundGameplayTags.h"
+#include "ColorboundInputComponent.h"
 
 void AColorboundPlayerCharacter::InitAbilitySystemComponent()
 {
@@ -43,6 +45,13 @@ void AColorboundPlayerCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 	ColorboundInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::InputAbilityInputTagPressed,
 		&ThisClass::InputAbilityInputTagReleased, /*out*/ BindHandles);
+
+	ColorboundInputComponent->BindNativeAction(InputConfig, ColorboundGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
+}
+
+void AColorboundPlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void AColorboundPlayerCharacter::InputAbilityInputTagPressed(FGameplayTag InputTag)
@@ -53,4 +62,15 @@ void AColorboundPlayerCharacter::InputAbilityInputTagPressed(FGameplayTag InputT
 void AColorboundPlayerCharacter::InputAbilityInputTagReleased(FGameplayTag InputTag)
 {
 	AbilitySystemComponent->AbilityInputTagReleased(InputTag);
+}
+
+void AColorboundPlayerCharacter::Input_Move(const FInputActionValue& InputActionValue)
+{
+	FVector2D InputVector = InputActionValue.Get<FVector2D>();
+	
+	ForwardVector = FVector2D(InputVector.Y, InputVector.X);
+	RightVector = ForwardVector.GetRotated(90);
+	
+	AddMovementInput(FVector::RightVector, InputVector.X);
+	AddMovementInput(FVector::ForwardVector, InputVector.Y);
 }
