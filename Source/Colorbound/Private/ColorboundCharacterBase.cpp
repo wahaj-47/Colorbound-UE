@@ -36,12 +36,12 @@ void AColorboundCharacterBase::InitializeAbilitySet()
 	}
 }
 
-FVector2D AColorboundCharacterBase::GetForwardVector() const
+FVector AColorboundCharacterBase::GetForwardVector() const
 {
 	return ForwardVector;
 }
 
-FVector2D AColorboundCharacterBase::GetRightVector() const
+FVector AColorboundCharacterBase::GetRightVector() const
 {
 	return RightVector;
 }

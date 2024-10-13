@@ -17,6 +17,7 @@ void UColorboundAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME_CONDITION_NOTIFY(UColorboundAttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UColorboundAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UColorboundAttributeSet, Damage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UColorboundAttributeSet, DamageResistance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UColorboundAttributeSet, CharacterLevel, COND_None, REPNOTIFY_Always);
 
 }
@@ -29,9 +30,17 @@ void UColorboundAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
-		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+		float InDamage = GetDamage();
+
+		SetDamage(0.0f);
+
+		if (InDamage > 0.0f)
+		{
+			const float NewHealth = GetHealth() - InDamage;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+		}
 	}
 }
 
@@ -45,12 +54,12 @@ void UColorboundAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldM
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UColorboundAttributeSet, MaxHealth, OldMaxHealth);
 }
 
-void UColorboundAttributeSet::OnRep_Damage(const FGameplayAttributeData& OldDamage) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UColorboundAttributeSet, Damage, OldDamage);
-}
-
 void UColorboundAttributeSet::OnRep_CharacterLevel(const FGameplayAttributeData& OldCharacterLevel) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UColorboundAttributeSet, CharacterLevel, OldCharacterLevel);
+}
+
+void UColorboundAttributeSet::OnRep_DamageResistance(const FGameplayAttributeData& OldDamageResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UColorboundAttributeSet, DamageResistance, OldDamageResistance);
 }

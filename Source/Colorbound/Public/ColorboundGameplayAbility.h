@@ -33,7 +33,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability Activation")
 	EColorboundAbilityActivationPolicy ActivationPolicy;
 
-	UFUNCTION(BlueprintCallable, Category = "Lyra|Ability")
+	UFUNCTION(BlueprintCallable, Category = "Colorbound|Ability")
 	AColorboundCharacterBase* GetColorboundCharacterFromActorInfo() const;
 	
 };

@@ -68,8 +68,8 @@ void AColorboundPlayerCharacter::Input_Move(const FInputActionValue& InputAction
 {
 	FVector2D InputVector = InputActionValue.Get<FVector2D>();
 	
-	ForwardVector = FVector2D(InputVector.Y, InputVector.X);
-	RightVector = ForwardVector.GetRotated(90);
+	ForwardVector = FVector(InputVector.Y, InputVector.X, 0);
+	RightVector = ForwardVector.RotateAngleAxis(90, FVector::UpVector);
 	
 	AddMovementInput(FVector::RightVector, InputVector.X);
 	AddMovementInput(FVector::ForwardVector, InputVector.Y);

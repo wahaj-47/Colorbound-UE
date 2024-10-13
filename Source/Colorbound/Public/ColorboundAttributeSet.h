@@ -44,9 +44,13 @@ public:
 	FGameplayAttributeData HealthRegenRate;
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, HealthRegenRate)
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Damage, Category = "Meta Attributes|Damage")
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes|Damage")
 	FGameplayAttributeData Damage;
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, Damage);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DamageResistance,  Category = "Meta Attributes|Damage")
+	FGameplayAttributeData DamageResistance;
+	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, DamageResistance);
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CharacterLevel, Category = "Attributes|Character Level")
 	FGameplayAttributeData CharacterLevel;
@@ -57,10 +61,10 @@ public:
 
 	UFUNCTION()
 	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
-
-	UFUNCTION()
-	void OnRep_Damage(const FGameplayAttributeData& OldDamage) const;
 	
 	UFUNCTION()
 	void OnRep_CharacterLevel(const FGameplayAttributeData& OldCharacterLevel) const;
+
+	UFUNCTION()
+	void OnRep_DamageResistance(const FGameplayAttributeData& OldDamageResistance) const;
 };
