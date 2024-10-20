@@ -8,6 +8,10 @@
 #include "ColorboundInputComponent.h"
 #include "ColorboundGameplayTags.h"
 #include "ColorboundInputComponent.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+#include "AbilitySystem/ActorComponents/AbilityQueueComponent.h"
 
 void AColorboundPlayerCharacter::InitAbilitySystemComponent()
 {
@@ -15,8 +19,9 @@ void AColorboundPlayerCharacter::InitAbilitySystemComponent()
 	check(PS);
 
 	AbilitySystemComponent = CastChecked<UColorboundAbilitySystemComponent>(PS->GetAbilitySystemComponent());
-	PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
+	AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 	AttributeSet = PS->GetAttributeSet();
+	AbilityQueueComponent->InitAbilityQueueComponent(AbilitySystemComponent);
 }
 
 void AColorboundPlayerCharacter::PossessedBy(AController* NewController)
@@ -24,7 +29,6 @@ void AColorboundPlayerCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitAbilitySystemComponent();
-
 	InitializeAbilitySet();
 }
 
@@ -36,10 +40,34 @@ void AColorboundPlayerCharacter::OnRep_PlayerState()
 	InitializeAbilitySet();
 }
 
+AColorboundPlayerCharacter::AColorboundPlayerCharacter()
+{
+	AbilityQueueComponent = CreateDefaultSubobject<UAbilityQueueComponent>(TEXT("AbilityQueueComponent"));
+}
+
 void AColorboundPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
 	UColorboundInputComponent* ColorboundInputComponent = Cast<UColorboundInputComponent>(PlayerInputComponent);
 	check(ColorboundInputComponent);
+
+	const APlayerController* PC = GetController<APlayerController>();
+	check(PC);
+
+	const ULocalPlayer* LP = Cast<ULocalPlayer>(PC->GetLocalPlayer());
+	check(LP);
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(Subsystem);
+
+	Subsystem->ClearAllMappings();
+
+	if (DefaultMappingContext)
+	{
+		// Add the mapping context with priority 0
+		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+	}
 
 	TArray<uint32> BindHandles;
 

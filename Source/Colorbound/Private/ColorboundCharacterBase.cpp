@@ -3,9 +3,17 @@
 
 #include "ColorboundCharacterBase.h"
 
+#include "PaperFlipbookComponent.h"
 #include "ColorboundAbilitySystemComponent.h"
 #include "ColorboundAttributeSet.h"
 #include "ColorboundAbilitySet.h"
+
+void AColorboundCharacterBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SpriteMaterialInstance = GetSprite()->CreateDynamicMaterialInstance(0, SpriteMaterial);
+}
 
 UAbilitySystemComponent* AColorboundCharacterBase::GetAbilitySystemComponent() const
 {

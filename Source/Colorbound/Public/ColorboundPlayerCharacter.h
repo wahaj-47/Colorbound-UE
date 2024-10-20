@@ -7,8 +7,10 @@
 #include "GameplayTagContainer.h"
 #include "ColorboundPlayerCharacter.generated.h"
 
+class UInputMappingContext;
 class UColorboundAbilitySet;
 class UColorboundInputConfig;
+class UAbilityQueueComponent;
 struct FInputActionValue;
 
 /**
@@ -20,6 +22,10 @@ class COLORBOUND_API AColorboundPlayerCharacter : public AColorboundCharacterBas
 	GENERATED_BODY()
 
 private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability System", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAbilityQueueComponent> AbilityQueueComponent;
+
+	UFUNCTION()
 	void InitAbilitySystemComponent();
 
 protected:
@@ -28,6 +34,7 @@ protected:
 	void InputAbilityInputTagReleased(FGameplayTag InputTag);
 
 public:
+	AColorboundPlayerCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
@@ -37,8 +44,9 @@ protected:
 	UColorboundInputConfig* InputConfig;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InputSystem|Input")
-	class UInputMappingContext* DefaultMappingContext;
+	UInputMappingContext* DefaultMappingContext;
 
+	UFUNCTION()
 	void Input_Move(const FInputActionValue& InputActionValue);
 
 };

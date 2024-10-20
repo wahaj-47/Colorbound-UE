@@ -7,6 +7,8 @@
 #include "AbilitySystemInterface.h"
 #include "ColorboundCharacterBase.generated.h"
 
+class UMaterialInterface;
+class UMaterialInstanceDynamic;
 class UGameplayAbility;
 class UColorboundAbilitySystemComponent;
 class UColorboundAttributeSet;
@@ -21,8 +23,13 @@ class COLORBOUND_API AColorboundCharacterBase : public APaperZDCharacter, public
 {
 	GENERATED_BODY()
 
-public:
+private:
 
+	UPROPERTY(BlueprintReadOnly, Category = "Colorbound|Sprite", meta = (AllowPrivateAccess="true"))
+	TObjectPtr<UMaterialInstanceDynamic> SpriteMaterialInstance;
+
+public:
+	virtual void BeginPlay() override;
 	// Implement IAbilitySystemInterface
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
@@ -50,10 +57,13 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UColorboundAbilitySystemComponent> AbilitySystemComponent;
 
+	UPROPERTY()
 	TObjectPtr<UColorboundAttributeSet> AttributeSet;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InputSystem|Abilities")
-	UColorboundAbilitySet* AbilitySet;
+	TObjectPtr<UColorboundAbilitySet> AbilitySet;
+	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Sprite")
+	TObjectPtr<UMaterialInterface> SpriteMaterial;
 
 	// Initialize the Character's attributes. Must run on Server but we run it on Client too
 	// so that we don't have to wait. The Server's replication to the Client won't matter since

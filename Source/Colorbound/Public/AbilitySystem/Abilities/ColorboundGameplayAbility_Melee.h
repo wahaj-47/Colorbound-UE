@@ -15,13 +15,15 @@ UCLASS()
 class UColorboundGameplayAbility_Melee : public UColorboundGameplayAbility
 {
 	GENERATED_BODY()
-	
-	int8 AnimationIndex;
 
+	UFUNCTION()
 	void OnAnimationEnd(bool bWasCompleted);
 
 	UFUNCTION()
 	void PerformHitScan(FGameplayEventData Payload);
+
+	UPROPERTY()
+	int8 AnimationIndex;
 
 public:
 	UColorboundGameplayAbility_Melee(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -29,13 +31,9 @@ public:
 protected:
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData);
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category="Colorbound|Ability")
 	TArray<UPaperZDAnimSequence*> AttackAnimations;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Ability")
-	FGameplayTag EventTag;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Ability")
 	float Range;
@@ -45,6 +43,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Ability")
 	float CapsuleHalfHeight;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Ability")
+	FGameplayTag EventTag_HitScan;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Ability|Damage")
 	float Damage;

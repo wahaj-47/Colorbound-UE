@@ -8,6 +8,8 @@
 #include "PaperZDAnimationComponent.h"
 #include "PaperZDAnimInstance.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
+#include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
 
 UColorboundGameplayAbility_Melee::UColorboundGameplayAbility_Melee(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -33,6 +35,8 @@ bool UColorboundGameplayAbility_Melee::CanActivateAbility(const FGameplayAbility
 
 void UColorboundGameplayAbility_Melee::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Cyan, TEXT("Activating ability"));
+
 	if (bHasBlueprintActivate)
 	{
 		K2_ActivateAbility();
@@ -40,32 +44,21 @@ void UColorboundGameplayAbility_Melee::ActivateAbility(const FGameplayAbilitySpe
 
 	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
+		UAbilityTask_WaitGameplayEvent* WaitForEventTask_HitScan = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, EventTag_HitScan);
+		if (WaitForEventTask_HitScan)
+		{
+			WaitForEventTask_HitScan->EventReceived.AddDynamic(this, &ThisClass::PerformHitScan);
+			WaitForEventTask_HitScan->ReadyForActivation();
+		}
+
 		if (AColorboundCharacterBase* ColorboundCharacter = GetColorboundCharacterFromActorInfo())
 		{
 			if (ColorboundCharacter->IsLocallyControlled())
 			{
 				ColorboundCharacter->GetAnimationComponent()->GetAnimInstance()->PlayAnimationOverride(AttackAnimations[AnimationIndex], FName("DefaultSlot"), 1.0f, 0.0f, FZDOnAnimationOverrideEndSignature::CreateUObject(this, &ThisClass::OnAnimationEnd));
-				
-				UAbilityTask_WaitGameplayEvent* WaitForEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, EventTag);
-				if (WaitForEventTask)
-				{
-					WaitForEventTask->EventReceived.AddDynamic(this, &ThisClass::PerformHitScan);
-					WaitForEventTask->ReadyForActivation();
-				}
-
-				AnimationIndex++;
-				if (AnimationIndex > AttackAnimations.Num() - 1)
-				{
-					AnimationIndex = 0;
-				}
 			}
 		}
 	}
-}
-
-void UColorboundGameplayAbility_Melee::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
-{
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UColorboundGameplayAbility_Melee::OnAnimationEnd(bool bWasCompleted)
@@ -79,29 +72,48 @@ void UColorboundGameplayAbility_Melee::PerformHitScan(FGameplayEventData Payload
 	{
 		if (Owner->IsLocallyControlled())
 		{
-			FHitResult HitResult;
-			FCollisionQueryParams QueryParams;
-			QueryParams.AddIgnoredActor(Owner); // Optionally ignore the actor performing the trace
+			TArray<FHitResult> HitResults;
+			FCollisionQueryParams CapsuleQueryParams;
+			CapsuleQueryParams.AddIgnoredActor(Owner); // Optionally ignore the actor performing the trace
 			FVector Location = Owner->GetActorLocation() + (Owner->GetForwardVector() * Range);
 
-			bool bHit = GetWorld()->SweepSingleByChannel(
-				HitResult,
+			bool bHit = GetWorld()->SweepMultiByChannel(
+				HitResults,
 				Location,
 				Location,
 				FQuat::Identity,
 				ECC_Pawn,  // Change to the collision channel you're interested in
 				FCollisionShape::MakeCapsule(CapsuleRadius, CapsuleHalfHeight),
-				QueryParams
+				CapsuleQueryParams
 			);
 
 			if (bHit)  // Check if something was hit and if there is a valid actor
 			{
-				if (AColorboundEnemyCharacter* Target = Cast<AColorboundEnemyCharacter>(HitResult.GetActor()))
+				for (const FHitResult& Hit : HitResults)
 				{
-					UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
-					FGameplayEffectSpecHandle DamageSpecHandle = ASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), ASC->MakeEffectContext());
-					DamageSpecHandle.Data.Get()->SetSetByCallerMagnitude(DamageTag, Damage);
-					ASC->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(), Target->GetAbilitySystemComponent());
+					AActor* HitActor = Hit.GetActor();
+					FHitResult HitResult;
+					FCollisionQueryParams LineQueryParams;
+					LineQueryParams.AddIgnoredActor(Owner);
+					LineQueryParams.AddIgnoredActor(HitActor);
+
+					bool bLineHit = GetWorld()->LineTraceSingleByChannel(
+						HitResult,
+						Location,
+						Hit.ImpactPoint,
+						ECC_Visibility,
+						LineQueryParams
+					);
+
+					if (!bLineHit) {
+						if (AColorboundEnemyCharacter* Target = Cast<AColorboundEnemyCharacter>(HitActor))
+						{
+							UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+							FGameplayEffectSpecHandle DamageSpecHandle = ASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), ASC->MakeEffectContext());
+							DamageSpecHandle.Data.Get()->SetSetByCallerMagnitude(DamageTag, Damage);
+							ASC->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(), Target->GetAbilitySystemComponent());
+						}
+					}
 				}
 			}
 		}
