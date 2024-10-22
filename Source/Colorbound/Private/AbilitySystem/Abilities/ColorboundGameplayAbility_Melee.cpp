@@ -8,7 +8,6 @@
 #include "PaperZDAnimationComponent.h"
 #include "PaperZDAnimInstance.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
-#include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
 
 UColorboundGameplayAbility_Melee::UColorboundGameplayAbility_Melee(const FObjectInitializer& ObjectInitializer)
@@ -33,40 +32,7 @@ bool UColorboundGameplayAbility_Melee::CanActivateAbility(const FGameplayAbility
 	return true;
 }
 
-void UColorboundGameplayAbility_Melee::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
-{
-	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Cyan, TEXT("Activating ability"));
-
-	if (bHasBlueprintActivate)
-	{
-		K2_ActivateAbility();
-	}
-
-	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
-	{
-		UAbilityTask_WaitGameplayEvent* WaitForEventTask_HitScan = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, EventTag_HitScan);
-		if (WaitForEventTask_HitScan)
-		{
-			WaitForEventTask_HitScan->EventReceived.AddDynamic(this, &ThisClass::PerformHitScan);
-			WaitForEventTask_HitScan->ReadyForActivation();
-		}
-
-		if (AColorboundCharacterBase* ColorboundCharacter = GetColorboundCharacterFromActorInfo())
-		{
-			if (ColorboundCharacter->IsLocallyControlled())
-			{
-				ColorboundCharacter->GetAnimationComponent()->GetAnimInstance()->PlayAnimationOverride(AttackAnimations[AnimationIndex], FName("DefaultSlot"), 1.0f, 0.0f, FZDOnAnimationOverrideEndSignature::CreateUObject(this, &ThisClass::OnAnimationEnd));
-			}
-		}
-	}
-}
-
-void UColorboundGameplayAbility_Melee::OnAnimationEnd(bool bWasCompleted)
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, !bWasCompleted);
-}
-
-void UColorboundGameplayAbility_Melee::PerformHitScan(FGameplayEventData Payload)
+void UColorboundGameplayAbility_Melee::ApplyDamage(FGameplayEventData Payload)
 {
 	if (AColorboundCharacterBase* Owner = GetColorboundCharacterFromActorInfo())
 	{

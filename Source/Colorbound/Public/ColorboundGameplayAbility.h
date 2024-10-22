@@ -7,6 +7,7 @@
 #include "ColorboundGameplayAbility.generated.h"
 
 class AColorboundCharacterBase;
+class UPaperZDAnimInstance;
 
 /**
  * Defines how ability is meant to activate
@@ -35,5 +36,8 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Colorbound|Ability")
 	AColorboundCharacterBase* GetColorboundCharacterFromActorInfo() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Colorbound|Ability")
+	UPaperZDAnimInstance* GetAnimInstanceFromActorInfo() const;
 	
 };
