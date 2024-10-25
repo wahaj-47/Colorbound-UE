@@ -8,6 +8,18 @@
 
 class UPaperZDAnimSequence;
 
+USTRUCT(BlueprintType)
+struct FAttack
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPaperZDAnimSequence* Animation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bShouldAddKnockback;
+};
+
 /**
  * 
  */
@@ -26,7 +38,7 @@ protected:
 	int32 ComboIndex;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="Colorbound|Ability")
-	TArray<UPaperZDAnimSequence*> AttackAnimations;
+	TArray<FAttack> AttackAnimations;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Ability")
 	float Range;
@@ -37,13 +49,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Ability")
 	float CapsuleHalfHeight;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Ability|Damage")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability|Damage")
 	float Damage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Ability|Damage")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability|Damage")
 	FGameplayTag DamageTag;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Ability|Damage")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability|Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Colorbound|Ability|Combo")
@@ -53,6 +65,6 @@ protected:
 	bool bShouldTriggerCombo;
 
 	UFUNCTION(BlueprintCallable, Category = "Colorbound|Ability")
-	void ApplyDamage(FGameplayEventData Payload);
+	FGameplayAbilityTargetDataHandle GetTargetData(FGameplayEventData Payload) const;
 
 };

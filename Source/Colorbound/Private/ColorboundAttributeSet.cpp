@@ -29,7 +29,7 @@ void UColorboundAttributeSet::PreAttributeChange(const FGameplayAttribute& Attri
 void UColorboundAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
-
+	
 	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
 		float InDamage = GetDamage();

@@ -30,6 +30,8 @@ UColorboundDamageCalculation::UColorboundDamageCalculation()
 
 void UColorboundDamageCalculation::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
+	UE_LOG(LogTemp, Warning, TEXT("Executing damage calculation"));
+
 	UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 	AActor* TargetActor = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
