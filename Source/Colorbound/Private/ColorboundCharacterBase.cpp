@@ -3,10 +3,13 @@
 
 #include "ColorboundCharacterBase.h"
 
-#include "PaperFlipbookComponent.h"
 #include "ColorboundAbilitySystemComponent.h"
 #include "ColorboundAttributeSet.h"
 #include "ColorboundAbilitySet.h"
+#include "ColorboundGameplayTags.h"
+#include "PaperFlipbookComponent.h"
+#include "PaperZDAnimationComponent.h"
+#include "PaperZDAnimInstance.h"
 
 void AColorboundCharacterBase::BeginPlay()
 {
@@ -52,4 +55,36 @@ FVector AColorboundCharacterBase::GetForwardVector() const
 FVector AColorboundCharacterBase::GetRightVector() const
 {
 	return RightVector;
+}
+
+void AColorboundCharacterBase::SetDirectionality(FVector2D Direction)
+{
+	ForwardVector = FVector(Direction.X, Direction.Y, 0);
+	RightVector = ForwardVector.RotateAngleAxis(90, FVector::UpVector);
+}
+
+UPaperZDAnimSequence* AColorboundCharacterBase::GetAnimationSequence(const FGameplayTagContainer& Rules) const
+{
+	for (const FColorboundAbilityAnimation& Rule : AnimationRules)
+	{
+		if (!Rule.Animation.IsNull() && Rules.HasAll(Rule.RequiredTags))
+		{
+			return Rule.Animation.LoadSynchronous();
+		}
+	}
+
+	return nullptr;
+}
+
+void AColorboundCharacterBase::HitReact()
+{
+	UPaperZDAnimSequence* Animation = GetAnimationSequence(FGameplayTagContainer(ColorboundGameplayTags::StatusTag_Hit));
+	UPaperZDAnimInstance* AnimInst = GetAnimInstance();
+
+	if (Animation && AnimInst)
+	{
+		AnimInst->PlayAnimationOverride(Animation);
+	}
+
+	K2_OnCharacterHit();
 }

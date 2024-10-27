@@ -4,9 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "ColorboundGameplayAbility.h"
+#include "GameplayTagContainer.h" 
 #include "ColorboundGameplayAbility_Melee.generated.h"
-
-class UPaperZDAnimSequence;
 
 USTRUCT(BlueprintType)
 struct FAttack
@@ -14,7 +13,7 @@ struct FAttack
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UPaperZDAnimSequence* Animation;
+	FGameplayTagContainer Rules;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bShouldAddKnockback;

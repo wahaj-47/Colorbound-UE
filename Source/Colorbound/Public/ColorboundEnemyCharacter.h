@@ -15,7 +15,7 @@ class COLORBOUND_API AColorboundEnemyCharacter : public AColorboundCharacterBase
 	GENERATED_BODY()
 
 public:
-	AColorboundEnemyCharacter();
+	AColorboundEnemyCharacter();	
 
 protected:
 	virtual void BeginPlay() override;

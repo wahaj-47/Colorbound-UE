@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
+#include "ColorboundCharacterBase.h"
 
 UColorboundAttributeSet::UColorboundAttributeSet()
 {
@@ -29,6 +30,14 @@ void UColorboundAttributeSet::PreAttributeChange(const FGameplayAttribute& Attri
 void UColorboundAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+
+	AActor* TargetActor = nullptr;
+	AColorboundCharacterBase* TargetCharacter = nullptr;
+	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+	{
+		TargetActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+		TargetCharacter = Cast<AColorboundCharacterBase>(TargetActor);
+	}
 	
 	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
@@ -40,6 +49,13 @@ void UColorboundAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 		{
 			const float NewHealth = GetHealth() - InDamage;
 			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+			bool bIsAlive = GetHealth() > 0.0f;
+
+			if (bIsAlive)
+			{
+				TargetCharacter->HitReact();
+			}
 		}
 	}
 }

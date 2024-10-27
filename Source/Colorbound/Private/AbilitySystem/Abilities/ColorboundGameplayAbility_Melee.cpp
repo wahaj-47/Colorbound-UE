@@ -4,11 +4,6 @@
 #include "AbilitySystem/Abilities/ColorboundGameplayAbility_Melee.h"
 #include "ColorboundCharacterBase.h"
 #include "ColorboundEnemyCharacter.h"
-#include "ColorboundAbilitySystemComponent.h"
-#include "PaperZDAnimationComponent.h"
-#include "PaperZDAnimInstance.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
-#include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
 
 UColorboundGameplayAbility_Melee::UColorboundGameplayAbility_Melee(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

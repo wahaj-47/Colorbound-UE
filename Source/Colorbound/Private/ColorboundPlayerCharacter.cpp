@@ -95,9 +95,9 @@ void AColorboundPlayerCharacter::InputAbilityInputTagReleased(FGameplayTag Input
 void AColorboundPlayerCharacter::Input_Move(const FInputActionValue& InputActionValue)
 {
 	FVector2D InputVector = InputActionValue.Get<FVector2D>();
+	FVector2D Direction = FVector2D(InputVector.Y, InputVector.X);
 	
-	ForwardVector = FVector(InputVector.Y, InputVector.X, 0);
-	RightVector = ForwardVector.RotateAngleAxis(90, FVector::UpVector);
+	SetDirectionality(Direction);
 	
 	AddMovementInput(FVector::RightVector, InputVector.X);
 	AddMovementInput(FVector::ForwardVector, InputVector.Y);

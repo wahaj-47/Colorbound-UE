@@ -39,7 +39,7 @@ protected:
 	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 
 	/** Called when this ability is granted to the ability system component. */
-	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "OnAbilityAdded")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Colorbound|Ability", DisplayName = "OnAbilityAdded")
 	void K2_OnAbilityAdded();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability Activation")

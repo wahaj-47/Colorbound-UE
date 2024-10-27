@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PaperZDCharacter.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
 #include "ColorboundCharacterBase.generated.h"
 
 class UMaterialInterface;
@@ -14,6 +15,19 @@ class UColorboundAbilitySystemComponent;
 class UColorboundAttributeSet;
 class UGameplayEffect;
 class UColorboundAbilitySet;
+class UPaperZDAnimSequence;
+
+USTRUCT(BlueprintType)
+struct FColorboundAbilityAnimation
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Colorbound|Abilities|Animation")
+	TSoftObjectPtr<UPaperZDAnimSequence> Animation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Colorbound|Abilities|Animation")
+	FGameplayTagContainer RequiredTags;
+};
 
 /**
  * 
@@ -45,8 +59,19 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Colorbound|Axis")
 	FVector GetRightVector() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Colorbound|Axis")
+	void SetDirectionality(FVector2D Direction);
+
+	UFUNCTION(BlueprintCallable, Category = "Colorbound|Abilities|Cosmetic")
+	UPaperZDAnimSequence* GetAnimationSequence(const FGameplayTagContainer& Rules) const;
+
+	void HitReact();
 	
 protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Abilities")
+	TArray<FColorboundAbilityAnimation> AnimationRules;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Colorbound|Axis")
 	FVector ForwardVector = FVector(1,0,0);
@@ -62,6 +87,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InputSystem|Abilities")
 	TObjectPtr<UColorboundAbilitySet> AbilitySet;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Sprite")
 	TObjectPtr<UMaterialInterface> SpriteMaterial;
 
@@ -69,4 +95,7 @@ protected:
 	// so that we don't have to wait. The Server's replication to the Client won't matter since
 	// the values should be the same.
 	virtual void InitializeAbilitySet();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Colorbound|Abilities|Cosmetic", DisplayName = "OnCharacterHit")
+	void K2_OnCharacterHit();
 };

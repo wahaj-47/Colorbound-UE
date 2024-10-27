@@ -14,6 +14,8 @@ AColorboundEnemyCharacter::AColorboundEnemyCharacter()
 	AttributeSet = CreateDefaultSubobject<UColorboundAttributeSet>(TEXT("AttributeSet"));
 }
 
+
+
 void AColorboundEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
