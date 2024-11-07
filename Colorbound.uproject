@@ -13,7 +13,18 @@
 				"Engine",
 				"GameplayAbilities",
 				"EnhancedInput",
-				"GameplayTags"
+				"GameplayTags",
+				"BlueprintGraph"
+			]
+		},
+		{
+			"Name": "ObjectPool",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"BlueprintGraph",
+				"Engine",
+				"DeveloperSettings"
 			]
 		}
 	],

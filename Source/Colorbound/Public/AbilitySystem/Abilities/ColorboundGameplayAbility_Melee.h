@@ -12,6 +12,10 @@ struct FAttack
 {
 	GENERATED_USTRUCT_BODY()
 
+	FAttack()
+		: bShouldAddKnockback(false)
+	{}
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayTagContainer Rules;
 
@@ -50,9 +54,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability|Damage")
 	float Damage;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability|Damage")
-	FGameplayTag DamageTag;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability|Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
