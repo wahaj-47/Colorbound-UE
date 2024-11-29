@@ -20,7 +20,13 @@ struct FPoolState
 	int32 MaxPoolSize = 50;
 
 	UPROPERTY()
-	TArray<AActor*> Array;
+	float Lifespan = 5.0f;
+
+	UPROPERTY()
+	TArray<UObject*> Array;
+
+	UPROPERTY()
+	TMap<int32, FTimerHandle> Timers;
 
 	bool IsEmpty() const
 	{
@@ -32,13 +38,13 @@ struct FPoolState
 		return PoolSize == MaxPoolSize;
 	}
 
-	void Add(AActor* Actor)
+	void Add(UObject* Object)
 	{
-		Array.Add(Actor);
+		Array.Add(Object);
 		PoolSize++;
 	}
 
-	AActor* Pop()
+	UObject* Pop()
 	{
 		return Array.Pop();
 	}
@@ -51,6 +57,9 @@ UCLASS(config = Game, defaultconfig)
 class OBJECTPOOL_API UObjectPoolWorldSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
+
+	UFUNCTION()
+	void StartLifespanTimer(AActor* Actor);
 
 public:
 	UObjectPoolWorldSubsystem();

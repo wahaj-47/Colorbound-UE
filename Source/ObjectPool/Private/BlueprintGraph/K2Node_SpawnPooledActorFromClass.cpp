@@ -120,7 +120,7 @@ void UK2Node_SpawnPooledActorFromClass::ExpandNode(FKismetCompilerContext& Compi
 		return;
 	}
 
-	if (!SpawnClass->ImplementsInterface(InterfaceClass))
+	if (!ClassToSpawn->ImplementsInterface(InterfaceClass))
 	{
 		CompilerContext.MessageLog.Error(*LOCTEXT("SpawnActorNodeMissingInterface_Error", "Spawn node @@: @@ does not implement @@.").ToString(), SpawnNode, SpawnClass, InterfaceClass);
 		// we break exec links so this is the only error we get, don't want the SpawnActor node being considered and giving 'unexpected node' type warnings

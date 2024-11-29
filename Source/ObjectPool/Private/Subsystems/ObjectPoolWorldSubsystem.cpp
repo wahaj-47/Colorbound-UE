@@ -18,12 +18,13 @@ UObjectPoolWorldSubsystem::UObjectPoolWorldSubsystem()
 void UObjectPoolWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	UObjectPoolConfig* Config = ObjectPoolConfig.LoadSynchronous();
-	for (FObjectPoolInfo ObjectPoolInfo : Config->ObjectPools)
+	for (FActorPoolInfo ActorPoolInfo : Config->ActorPools)
 	{
-		if (ObjectPoolInfo.ActorClass->ImplementsInterface(UPoolable::StaticClass()))
+		if (ActorPoolInfo.ActorClass->ImplementsInterface(UPoolable::StaticClass()))
 		{
-			FPoolState& ObjectPool = ObjectPools.Add(ObjectPoolInfo.ActorClass);
-			ObjectPool.MaxPoolSize = ObjectPoolInfo.PoolLimit;
+			FPoolState& ObjectPool = ObjectPools.Add(ActorPoolInfo.ActorClass);
+			ObjectPool.MaxPoolSize = ActorPoolInfo.PoolParams.PoolLimit;
+			ObjectPool.Lifespan = ActorPoolInfo.PoolParams.Lifespan;
 		}
 	}
 }
@@ -36,9 +37,6 @@ AActor* UObjectPoolWorldSubsystem::BeginDeferredPooledActorSpawnFromClass(const 
 	{
 		FPoolState& ObjectPool = ObjectPools.FindOrAdd(ActorClass);
 
-		UE_LOG(LogTemp, Warning, TEXT("Current Pool Size: %d"), ObjectPool.PoolSize);
-		UE_LOG(LogTemp, Warning, TEXT("Max Pool Size: %d"), ObjectPool.MaxPoolSize);
-		
 		if (ObjectPool.IsEmpty())
 		{
 			if (!ObjectPool.IsFull())
@@ -52,11 +50,15 @@ AActor* UObjectPoolWorldSubsystem::BeginDeferredPooledActorSpawnFromClass(const 
 		}
 		else
 		{
-			SpawnedActor = ObjectPool.Pop();
+			SpawnedActor = Cast<AActor>(ObjectPool.Pop());
 			SpawnedActor->SetOwner(Owner);
 			SpawnedActor->SetActorTransform(SpawnTransform);
 			SpawnedActor->SpawnCollisionHandlingMethod = CollisionHandlingOverride;
 		}
+	}
+	else
+	{
+		SpawnedActor = UGameplayStatics::BeginDeferredActorSpawnFromClass(WorldContextObject, ActorClass, SpawnTransform, CollisionHandlingOverride, Owner, TransformScaleMethod);
 	}
 
 	return SpawnedActor;
@@ -64,14 +66,23 @@ AActor* UObjectPoolWorldSubsystem::BeginDeferredPooledActorSpawnFromClass(const 
 
 AActor* UObjectPoolWorldSubsystem::FinishSpawningPooledActor(AActor* Actor, const FTransform& SpawnTransform, ESpawnActorScaleMethod TransformScaleMethod)
 {
-	if (Actor )
+	if (Actor)
 	{
 		if (!Actor->IsActorInitialized())
 		{
 			Actor->FinishSpawning(SpawnTransform, false, nullptr, TransformScaleMethod);
 		}
-		IPoolable::Execute_OnSpawnFromPool(Actor);
+
+		if (Actor->GetClass()->ImplementsInterface(UPoolable::StaticClass()))
+		{
+			IPoolable::Execute_OnSpawnFromPool(Actor);
+			StartLifespanTimer(Actor);
+		}
 	}
+
+	Actor->SetActorTickEnabled(true);
+	Actor->SetActorHiddenInGame(false);
+	Actor->SetActorEnableCollision(true);
 
 	return Actor;
 }
@@ -89,11 +100,35 @@ void UObjectPoolWorldSubsystem::ReturnToPool(AActor* Actor)
 	if (ActorClass->ImplementsInterface(UPoolable::StaticClass()))
 	{
 		IPoolable::Execute_OnReturnToPool(Actor);
+
 		FPoolState* ObjectPool = ObjectPools.Find(ActorClass);
+		
+		int32 ActorID = Actor->GetUniqueID();
+		FTimerHandle* LifespanTimerHandle = ObjectPool->Timers.Find(ActorID);
+
+		GetWorld()->GetTimerManager().ClearTimer(*LifespanTimerHandle);
+
+		Actor->SetActorTickEnabled(false);
+		Actor->SetActorHiddenInGame(true);
+		Actor->SetActorEnableCollision(false);
+		
 		ObjectPool->Add(Actor);
 	}
 	else
 	{
 		Actor->Destroy();
 	}
+}
+
+void UObjectPoolWorldSubsystem::StartLifespanTimer(AActor* Actor)
+{
+	int32 ActorID = Actor->GetUniqueID();
+	UClass* ActorClass = Actor->GetClass();
+	FPoolState* ObjectPool = ObjectPools.Find(ActorClass);
+
+	FTimerHandle& LifespanTimerHandle = ObjectPool->Timers.FindOrAdd(ActorID);
+	FTimerDelegate LifespanTimerDelegate;
+	LifespanTimerDelegate.BindUFunction(this, "ReturnToPool", Actor);
+
+	GetWorld()->GetTimerManager().SetTimer(LifespanTimerHandle, LifespanTimerDelegate, ObjectPool->Lifespan, false);
 }
