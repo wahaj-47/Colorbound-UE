@@ -160,14 +160,14 @@ void UColorboundAbilitySystemComponent::AbilitySpecInputReleased(FGameplayAbilit
 	}
 }
 
-float UColorboundAbilitySystemComponent::PlaySequence(UGameplayAbility* InAnimatingAbility, FGameplayAbilityActivationInfo ActivationInfo, UPaperZDAnimSequence* NewAnimSequence, FName SlotName, float InPlayRate, float StartingPosition)
+float UColorboundAbilitySystemComponent::PlaySequence(UGameplayAbility* InAnimatingAbility, FGameplayAbilityActivationInfo ActivationInfo, UPaperZDAnimSequence* NewAnimSequence, FZDOnAnimationOverrideEndSignature& OnOverrideEnd, FName SlotName, float InPlayRate, float StartingPosition)
 {
 	float Duration = -1.f;
 	UPaperZDAnimInstance* AnimInstance = ColorboundAbilityActorInfo.IsValid() ? ColorboundAbilityActorInfo->GetAnimInstance() : nullptr;
 	if (AnimInstance && NewAnimSequence)
 	{
 		Duration = NewAnimSequence->GetTotalDuration();
-		AnimInstance->PlayAnimationOverride(NewAnimSequence, SlotName, InPlayRate, StartingPosition);
+		AnimInstance->PlayAnimationOverride(NewAnimSequence, SlotName, InPlayRate, StartingPosition, OnOverrideEnd);
 
 		if (Duration > 0.f)
 		{
@@ -230,7 +230,7 @@ float UColorboundAbilitySystemComponent::PlaySequenceSimulated(UPaperZDAnimSeque
 	if (AnimInstance && NewAnimSequence)
 	{
 		Duration = NewAnimSequence->GetTotalDuration();
-		bool bQueued = AnimInstance->PlayAnimationOverride(NewAnimSequence, SlotName, InPlayRate, StartingPosition * Duration);
+		bool bQueued = AnimInstance->PlayAnimationOverride(NewAnimSequence, SlotName, InPlayRate, StartingPosition);
 
 		if (Duration > 0.f && bQueued)
 		{
@@ -346,7 +346,7 @@ void UColorboundAbilitySystemComponent::OnRep_ReplicatedAnimSequence()
 				(LocalAnimSequenceInfo.PlayInstanceId != ConstRepAnimSequenceInfo.PlayInstanceId))
 			{
 				LocalAnimSequenceInfo.PlayInstanceId = ConstRepAnimSequenceInfo.PlayInstanceId;
-				PlaySequenceSimulated(ConstRepAnimSequenceInfo.Animation, ConstRepAnimSequenceInfo.SlotName, ConstRepAnimSequenceInfo.PlayRate, ConstRepAnimSequenceInfo.Position);
+				PlaySequenceSimulated(ConstRepAnimSequenceInfo.Animation, ConstRepAnimSequenceInfo.SlotName, ConstRepAnimSequenceInfo.PlayRate);
 			}
 
 			if (LocalAnimSequenceInfo.AnimSequence == nullptr)
@@ -370,7 +370,7 @@ void UColorboundAbilitySystemComponent::OnRep_ReplicatedAnimSequence()
 			else
 			{
 				// Update Position. If error is too great, jump to replicated position.
-				const float CurrentPosition = AnimInstance->GetPlayer()->GetPlaybackProgress();
+				const float CurrentPosition = AnimInstance->GetPlayer()->GetCurrentPlaybackTime();
 				const float DeltaPosition = ConstRepAnimSequenceInfo.Position - CurrentPosition;
 
 				if ((FMath::Abs(DeltaPosition) > SEQUENCE_REP_POS_ERR_THRESH) && (ConstRepAnimSequenceInfo.IsStopped == 0))
@@ -382,10 +382,11 @@ void UColorboundAbilitySystemComponent::OnRep_ReplicatedAnimSequence()
 						AnimInstance->GetPlayer()->ProcessAnimSequenceNotifies(
 							LocalAnimSequenceInfo.AnimSequence,
 							DeltaTime,
-							CurrentPosition * LocalAnimSequenceInfo.AnimSequence->GetTotalDuration(),
-							ConstRepAnimSequenceInfo.Position * LocalAnimSequenceInfo.AnimSequence->GetTotalDuration()
+							CurrentPosition + DeltaPosition,
+							CurrentPosition
 						);
 					}
+					// @TODO: Fast forward to server position
 				}
 			}
 		}
@@ -422,16 +423,17 @@ void UColorboundAbilitySystemComponent::AnimSequence_UpdateReplicatedData()
 void UColorboundAbilitySystemComponent::AnimSequence_UpdateReplicatedData(FGameplayAbilityRepAnimSequence& OutRepAnimSeqeunceInfo)
 {
 	const UPaperZDAnimInstance* AnimInstance = ColorboundAbilityActorInfo.IsValid() ? ColorboundAbilityActorInfo->GetAnimInstance() : nullptr;
+	const UPaperZDAnimPlayer* AnimPlayer = AnimInstance ? AnimInstance->GetPlayer() : nullptr;
 	if (AnimInstance && LocalAnimSequenceInfo.AnimSequence)
 	{
 		OutRepAnimSeqeunceInfo.Animation = LocalAnimSequenceInfo.AnimSequence;
 
 		// Compressed Flags
-		const bool bIsStopped = !AnimInstance->GetPlayer()->IsPlaying();
+		const bool bIsStopped = AnimPlayer->GetCurrentAnimSequence() == OutRepAnimSeqeunceInfo.Animation && !AnimPlayer->IsPlaying();
 
 		if (!bIsStopped)
 		{
-			OutRepAnimSeqeunceInfo.Position = AnimInstance->GetPlayer()->GetPlaybackProgress();
+			OutRepAnimSeqeunceInfo.Position = AnimPlayer->GetCurrentPlaybackTime();
 		}
 
 		if (OutRepAnimSeqeunceInfo.IsStopped != bIsStopped)

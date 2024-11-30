@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemComponent.h"
 #include "PaperZDAnimInstance.h"
+#include "AbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/ColorboundAbilityTypes.h"
 #include "AbilitySystem/Abilities/GameplayAbilityRepAnimSequence.h"
 #include "ColorboundAbilitySystemComponent.generated.h"
@@ -39,7 +39,7 @@ public:
 	// ----------------------------------------------------------------------------------------------------------------
 
 	/** Plays a Sequence and handles replication and prediction based on passed in ability/activation info */
-	float PlaySequence(UGameplayAbility* AnimatingAbility, FGameplayAbilityActivationInfo ActivationInfo, UPaperZDAnimSequence* Sequence, FName SlotName = "DefaultSlot", float InPlayRate = 1.0f, float StartingPosition = 0.0f);
+	float PlaySequence(UGameplayAbility* AnimatingAbility, FGameplayAbilityActivationInfo ActivationInfo, UPaperZDAnimSequence* Sequence, FZDOnAnimationOverrideEndSignature& OnOverrideEnd, FName SlotName = "DefaultSlot", float InPlayRate = 1.0f, float StartingPosition = 0.0f);
 
 	/** Plays a Sequence without updating replication/prediction structures. Used by simulated proxies when replication tells them to play a Sequence. */
 	float PlaySequenceSimulated(UPaperZDAnimSequence* Sequence, FName SlotName = "DefaultSlot", float InPlayRate = 1.0f, float StartingPosition = 0.0f);

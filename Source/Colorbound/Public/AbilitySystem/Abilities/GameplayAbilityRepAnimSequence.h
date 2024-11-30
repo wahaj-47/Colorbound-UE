@@ -15,11 +15,11 @@ struct FGameplayAbilityRepAnimSequence
 {
 	GENERATED_USTRUCT_BODY()
 
-	/** Animation ref. When playing a dynamic montage this points to the AnimSequence the montage was created from */
+	/** Animation ref. */
 	UPROPERTY()
 	TObjectPtr<UPaperZDAnimSequence> Animation;
 
-	/** Optional slot name used by dynamic montages. */
+	/** Slot name used by sequences. */
 	UPROPERTY()
 	FName SlotName;
 
@@ -27,15 +27,15 @@ struct FGameplayAbilityRepAnimSequence
 	UPROPERTY()
 	float PlayRate;
 
-	/** Montage position */
+	/** Server time this sequence was queued */
 	UPROPERTY(NotReplicated)
 	float Position;
 
-	/** ID incremented every time a montage is played, used to trigger replication when the same montage is played multiple times. This ID wraps around when it reaches its max value. */
+	/** ID incremented every time a seqeunce is played, used to trigger replication when the same montage is played multiple times. This ID wraps around when it reaches its max value. */
 	UPROPERTY()
 	uint8 PlayInstanceId;
 
-	/** Bit set when montage has been stopped. */
+	/** Bit set when sequence has been stopped. */
 	UPROPERTY()
 	uint8 IsStopped : 1;
 
