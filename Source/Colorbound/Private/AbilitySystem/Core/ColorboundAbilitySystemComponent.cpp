@@ -5,6 +5,7 @@
 #include "AbilitySystem/Core/ColorboundGameplayAbility.h"
 #include "AnimSequences/Players/PaperZDAnimPlayer.h"
 #include "Net/UnrealNetwork.h"
+#include "GameFramework/GameStateBase.h"
 
 void UColorboundAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)
 {
@@ -17,6 +18,7 @@ UColorboundAbilitySystemComponent::UColorboundAbilitySystemComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicated(true);
+	bPendingSequenceRep = true;
 
 	InputPressedSpecHandles.Reset();
 	InputReleasedSpecHandles.Reset();
@@ -194,8 +196,9 @@ float UColorboundAbilitySystemComponent::PlaySequence(UGameplayAbility* InAnimat
 				MutableRepAnimSequenceInfo.PlayInstanceId = (MutableRepAnimSequenceInfo.PlayInstanceId < UINT8_MAX ? MutableRepAnimSequenceInfo.PlayInstanceId + 1 : 0);
 				MutableRepAnimSequenceInfo.SlotName = SlotName;
 				MutableRepAnimSequenceInfo.PlayRate = InPlayRate;
+				MutableRepAnimSequenceInfo.TriggeredTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
 
-				// Update parameters that change during Montage life time.
+				// Update parameters that change during sequence life time.
 				AnimSequence_UpdateReplicatedData();
 			}
 
@@ -370,23 +373,25 @@ void UColorboundAbilitySystemComponent::OnRep_ReplicatedAnimSequence()
 			else
 			{
 				// Update Position. If error is too great, jump to replicated position.
-				const float CurrentPosition = AnimInstance->GetPlayer()->GetCurrentPlaybackTime();
-				const float DeltaPosition = ConstRepAnimSequenceInfo.Position - CurrentPosition;
+				const float CurrentServerTime = World->GetGameState()->GetServerWorldTimeSeconds();
+				const float DeltaServerTime = ConstRepAnimSequenceInfo.TriggeredTime - CurrentServerTime;
+				const float NewPosition = FMath::Clamp(DeltaServerTime, 0, ConstRepAnimSequenceInfo.Animation->GetTotalDuration());
 
-				if ((FMath::Abs(DeltaPosition) > SEQUENCE_REP_POS_ERR_THRESH) && (ConstRepAnimSequenceInfo.IsStopped == 0))
+				if ((FMath::Abs(DeltaServerTime) > SEQUENCE_REP_POS_ERR_THRESH) && (ConstRepAnimSequenceInfo.IsStopped == 0))
 				{
 					// Skip triggering notifies if we're going backwards in time, we've already triggered them.
-					const float DeltaTime = !FMath::IsNearlyZero(ConstRepAnimSequenceInfo.PlayRate) ? (DeltaPosition / ConstRepAnimSequenceInfo.PlayRate) : 0.f;
+					const float DeltaTime = !FMath::IsNearlyZero(ConstRepAnimSequenceInfo.PlayRate) ? (NewPosition / ConstRepAnimSequenceInfo.PlayRate) : 0.f;
 					if (DeltaTime >= 0.f)
 					{
 						AnimInstance->GetPlayer()->ProcessAnimSequenceNotifies(
 							LocalAnimSequenceInfo.AnimSequence,
 							DeltaTime,
-							CurrentPosition + DeltaPosition,
-							CurrentPosition
+							NewPosition,
+							0
 						);
 					}
 					// @TODO: Fast forward to server position
+					PlaySequenceSimulated(ConstRepAnimSequenceInfo.Animation, ConstRepAnimSequenceInfo.SlotName, ConstRepAnimSequenceInfo.PlayRate, NewPosition);
 				}
 			}
 		}
@@ -429,12 +434,7 @@ void UColorboundAbilitySystemComponent::AnimSequence_UpdateReplicatedData(FGamep
 		OutRepAnimSeqeunceInfo.Animation = LocalAnimSequenceInfo.AnimSequence;
 
 		// Compressed Flags
-		const bool bIsStopped = AnimPlayer->GetCurrentAnimSequence() == OutRepAnimSeqeunceInfo.Animation && !AnimPlayer->IsPlaying();
-
-		if (!bIsStopped)
-		{
-			OutRepAnimSeqeunceInfo.Position = AnimPlayer->GetCurrentPlaybackTime();
-		}
+		const bool bIsStopped = AnimPlayer->GetCurrentAnimSequence() == OutRepAnimSeqeunceInfo.Animation && !AnimPlayer->IsPlaying();		
 
 		if (OutRepAnimSeqeunceInfo.IsStopped != bIsStopped)
 		{

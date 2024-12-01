@@ -28,8 +28,8 @@ struct FGameplayAbilityRepAnimSequence
 	float PlayRate;
 
 	/** Server time this sequence was queued */
-	UPROPERTY(NotReplicated)
-	float Position;
+	UPROPERTY()
+	float TriggeredTime;
 
 	/** ID incremented every time a seqeunce is played, used to trigger replication when the same montage is played multiple times. This ID wraps around when it reaches its max value. */
 	UPROPERTY()
@@ -50,7 +50,7 @@ struct FGameplayAbilityRepAnimSequence
 		: Animation(nullptr),
 		SlotName(NAME_None),
 		PlayRate(0.f),
-		Position(0.f),
+		TriggeredTime(0.f),
 		PlayInstanceId(0),
 		IsStopped(true),
 		bSkipPlayRate(false)

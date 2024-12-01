@@ -5,7 +5,7 @@
 
 bool FGameplayAbilityRepAnimSequence::NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess)
 {
-	Ar << Position;
+	Ar << TriggeredTime;
 
 	uint8 bIsStopped = IsStopped;
 	Ar.SerializeBits(&bIsStopped, 1);
