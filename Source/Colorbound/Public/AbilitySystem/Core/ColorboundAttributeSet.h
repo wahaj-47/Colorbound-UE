@@ -127,7 +127,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitResistance, Category = "Colorbound|Attributes|Secondary", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData CriticalHitResistance;
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_HealthRegenRate, Category = "Colorbound|Attributes", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_HealthRegenRate, Category = "Colorbound|Attributes|Secondary", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData HealthRegenRate;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Colorbound|Attributes|Secondary", Meta = (AllowPrivateAccess = true))

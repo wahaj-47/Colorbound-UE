@@ -69,6 +69,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Colorbound|Abilities|Cosmetic")
 	UPaperZDAnimSequence* GetAnimationSequence(const FGameplayTagContainer& Rules) const;
 
+	UFUNCTION(NetMulticast, Unreliable)
 	void HitReact();
 	
 protected:

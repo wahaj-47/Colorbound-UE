@@ -15,7 +15,8 @@
 				"EnhancedInput",
 				"GameplayTags",
 				"BlueprintGraph",
-				"TargetingSystem"
+				"TargetingSystem",
+				"UMG"
 			]
 		},
 		{

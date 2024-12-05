@@ -35,6 +35,21 @@ public:
 
 };
 
+USTRUCT(BlueprintType)
+struct FActorComponentPoolInfo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FObjectPoolParams PoolParams;
+
+	// Actor class must implement 'Poolable' interface.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UActorComponent> ActorComponentClass;
+
+};
+
 /**
  * 
  */
@@ -46,5 +61,8 @@ class OBJECTPOOL_API UObjectPoolConfig : public UDataAsset
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FActorPoolInfo> ActorPools;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FActorComponentPoolInfo> ActorComponentPools;
 
 };

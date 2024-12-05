@@ -4,6 +4,9 @@
 #include "Core/ColorboundPlayerController.h"
 #include "Core/ColorboundPlayerState.h"
 #include "AbilitySystem/Core/ColorboundAbilitySystemComponent.h"
+#include "UI/DamageTextWidgetComponent.h"
+#include "Subsystems/ObjectPoolWorldSubsystem.h"
+#include "Subsystems/SubsystemBlueprintLibrary.h"
 
 AColorboundPlayerState* AColorboundPlayerController::GetColorboundPlayerState() const
 {
@@ -24,4 +27,14 @@ void AColorboundPlayerController::PostProcessInput(const float DeltaTime, const 
 	}
 
 	Super::PostProcessInput(DeltaTime, bGamePaused);
+}
+
+void AColorboundPlayerController::ShowDamageNumber_Implementation(float DamageAmount, AActor* TargetActor)
+{
+	UObjectPoolWorldSubsystem* ObjectPool = GetPawn()->GetWorld()->GetSubsystem<UObjectPoolWorldSubsystem>();
+	
+	UDamageTextWidgetComponent* DamageText = Cast<UDamageTextWidgetComponent>(ObjectPool->AddPooledComponentByClass(TargetActor, DamageTextComponentClass, false, FTransform::Identity, true));
+	ObjectPool->FinishAddPooledComponent(TargetActor, DamageText, false, FTransform::Identity);
+
+	DamageText->SetDamageText(DamageAmount);
 }

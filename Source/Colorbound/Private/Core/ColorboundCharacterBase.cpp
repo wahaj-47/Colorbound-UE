@@ -91,14 +91,14 @@ UPaperZDAnimSequence* AColorboundCharacterBase::GetAnimationSequence(const FGame
 	return nullptr;
 }
 
-void AColorboundCharacterBase::HitReact()
+void AColorboundCharacterBase::HitReact_Implementation()
 {
 	UPaperZDAnimSequence* Animation = GetAnimationSequence(FGameplayTagContainer(ColorboundGameplayTags::StatusTag_Hit));
-	UPaperZDAnimInstance* AnimInst = GetAnimInstance();
+	UPaperZDAnimInstance* Instance = GetAnimInstance();
 
-	if (Animation && AnimInst)
+	if (Animation && Instance)
 	{
-		AnimInst->PlayAnimationOverride(Animation);
+		Instance->PlayAnimationOverride(Animation);
 	}
 
 	K2_OnCharacterHit();

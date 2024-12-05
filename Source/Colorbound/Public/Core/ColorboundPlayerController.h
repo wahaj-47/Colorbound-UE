@@ -8,6 +8,7 @@
 
 class AColorboundPlayerState;
 class UColorboundAbilitySystemComponent;
+class UDamageTextWidgetComponent;
 
 /**
  * 
@@ -24,7 +25,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Colorbound|PlayerController")
 	UColorboundAbilitySystemComponent* GetColorboundAbilitySystemComponent() const;
 
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float DamageAmount, AActor* TargetActor);
+
 protected:
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+
+	UPROPERTY(EditAnywhere, Category = "Colorbound|UI")
+	TSubclassOf<UDamageTextWidgetComponent> DamageTextComponentClass;
 	
 };

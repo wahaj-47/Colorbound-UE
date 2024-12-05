@@ -49,7 +49,7 @@ void UPlayAnimationAndWaitForEvent::Activate()
 			EventHandle = AbilitySystemComponent->AddGameplayEventTagContainerDelegate(EventTags, FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnGameplayEvent));
 			AnimationEndDelegate.BindUObject(this, &ThisClass::OnAnimationEnd);
 
-			if (ASC->PlaySequence(Ability, Ability->GetCurrentActivationInfo(), Animation, AnimationEndDelegate, SlotName, Rate, StartingPosition) > 0.0f)
+			if (ASC->PlaySequence(Ability, Ability->GetCurrentActivationInfo(), Animation, SlotName, Rate, StartingPosition, AnimationEndDelegate) > 0.0f)
 			{
 				if (ShouldBroadcastAbilityTaskDelegates() == false)
 				{

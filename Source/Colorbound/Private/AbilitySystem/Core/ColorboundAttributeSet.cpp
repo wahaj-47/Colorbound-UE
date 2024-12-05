@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Core/ColorboundAttributeSet.h"
 #include "Core/ColorboundCharacterBase.h"
+#include "Core/ColorboundPlayerController.h"
 #include "GameplayEffect.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
@@ -46,12 +47,52 @@ void UColorboundAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 {
 	Super::PostGameplayEffectExecute(Data);
 
+	FGameplayEffectContextHandle Context = Data.EffectSpec.GetContext();
+	UAbilitySystemComponent* Source = Context.GetOriginalInstigatorAbilitySystemComponent();
+	const FGameplayTagContainer& SourceTags = *Data.EffectSpec.CapturedSourceTags.GetAggregatedTags();
+	FGameplayTagContainer SpecAssetTags;
+	Data.EffectSpec.GetAllAssetTags(SpecAssetTags);
+
 	AActor* TargetActor = nullptr;
+	AController* TargetController = nullptr;
 	AColorboundCharacterBase* TargetCharacter = nullptr;
 	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
 	{
 		TargetActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+		TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
 		TargetCharacter = Cast<AColorboundCharacterBase>(TargetActor);
+	}
+
+	AActor* SourceActor = nullptr;
+	AController* SourceController = nullptr;
+	AColorboundCharacterBase* SourceCharacter = nullptr;
+	if (Source && Source->AbilityActorInfo.IsValid() && Source->AbilityActorInfo->AvatarActor.IsValid())
+	{
+		SourceActor = Source->AbilityActorInfo->AvatarActor.Get();
+		SourceController = Source->AbilityActorInfo->PlayerController.Get();
+		if (SourceController == nullptr && SourceActor != nullptr)
+		{
+			if (APawn* Pawn = Cast<APawn>(SourceActor))
+			{
+				SourceController = Pawn->GetController();
+			}
+		}
+
+		// Use the controller to find the source pawn
+		if (SourceController)
+		{
+			SourceCharacter = Cast<AColorboundCharacterBase>(SourceController->GetPawn());
+		}
+		else
+		{
+			SourceCharacter = Cast<AColorboundCharacterBase>(SourceActor);
+		}
+
+		// Set the causer actor based on context if it's set
+		if (Context.GetEffectCauser())
+		{
+			SourceActor = Context.GetEffectCauser();
+		}
 	}
 	
 	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
@@ -70,6 +111,15 @@ void UColorboundAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 			if (bIsAlive)
 			{
 				TargetCharacter->HitReact();
+			}
+
+			if (SourceActor != TargetActor)
+			{
+				AColorboundPlayerController* PC = Cast<AColorboundPlayerController>(SourceController);
+				if (PC)
+				{
+					PC->ShowDamageNumber(InDamage, TargetCharacter);
+				}
 			}
 		}
 	}

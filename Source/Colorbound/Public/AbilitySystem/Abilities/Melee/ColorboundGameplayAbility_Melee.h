@@ -35,7 +35,7 @@ protected:
 	float CapsuleHalfHeight;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability|Damage")
-	float Damage;
+	FScalableFloat Damage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability|Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
@@ -45,8 +45,5 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Colorbound|Ability|Combo")
 	bool bShouldTriggerCombo;
-
-	UFUNCTION(BlueprintCallable, Category = "Colorbound|Ability")
-	FGameplayAbilityTargetDataHandle GetTargetData(FGameplayEventData Payload) const;
 
 };

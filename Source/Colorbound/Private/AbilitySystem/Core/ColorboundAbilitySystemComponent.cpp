@@ -162,7 +162,7 @@ void UColorboundAbilitySystemComponent::AbilitySpecInputReleased(FGameplayAbilit
 	}
 }
 
-float UColorboundAbilitySystemComponent::PlaySequence(UGameplayAbility* InAnimatingAbility, FGameplayAbilityActivationInfo ActivationInfo, UPaperZDAnimSequence* NewAnimSequence, FZDOnAnimationOverrideEndSignature& OnOverrideEnd, FName SlotName, float InPlayRate, float StartingPosition)
+float UColorboundAbilitySystemComponent::PlaySequence(UGameplayAbility* InAnimatingAbility, FGameplayAbilityActivationInfo ActivationInfo, UPaperZDAnimSequence* NewAnimSequence, FName SlotName, float InPlayRate, float StartingPosition, FZDOnAnimationOverrideEndSignature OnOverrideEnd)
 {
 	float Duration = -1.f;
 	UPaperZDAnimInstance* AnimInstance = ColorboundAbilityActorInfo.IsValid() ? ColorboundAbilityActorInfo->GetAnimInstance() : nullptr;

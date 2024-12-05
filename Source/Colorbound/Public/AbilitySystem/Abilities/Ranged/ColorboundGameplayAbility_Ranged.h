@@ -25,7 +25,7 @@ protected:
 	FGameplayTagContainer AttackAnimation;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability|Damage")
-	float Damage = 1;
+	FScalableFloat Damage = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Ability|Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
