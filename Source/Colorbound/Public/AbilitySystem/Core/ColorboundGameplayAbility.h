@@ -32,6 +32,8 @@ class COLORBOUND_API UColorboundGameplayAbility : public UGameplayAbility
 	GENERATED_BODY()
 
 public:
+	UColorboundGameplayAbility(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
 	EColorboundAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
 
 	void TryActivateAbilityOnGranted(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) const;
@@ -43,6 +45,9 @@ public:
 	UColorboundAbilitySystemComponent* GetColorboundAbilitySystemComponentFromActorInfo() const;
 
 	const FColorboundGameplayAbilityActorInfo* GetColorboundActorInfo(const FGameplayAbilityActorInfo* ActorInfo);
+
+	UFUNCTION(BlueprintCallable, Category = "Colorbound|Ability")
+	float GetScalableFloatValueAtLevel(const FScalableFloat& ScalableFloat, int32 Level) const;
 
 	// --------------------------------------
 	//	Animation

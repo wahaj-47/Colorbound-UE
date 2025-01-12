@@ -18,4 +18,8 @@ public:
 	UColorboundDamageCalculation();
 
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Damage")
+	TObjectPtr<UCurveTable> DamageCalculationCoefficients;
 };

@@ -15,8 +15,8 @@ UColorboundGameplayAbility_Ranged::UColorboundGameplayAbility_Ranged(const FObje
 FTransform UColorboundGameplayAbility_Ranged::GetSpawnTransform() const
 {
 	AColorboundCharacterBase* Character = GetColorboundCharacterFromActorInfo();
-	FVector Forward = Character->GetForwardVector();
-	FVector Right = Character->GetRightVector();
+	FVector Forward = Character->GetActorForwardVector();
+	FVector Right = Character->GetActorRightVector();
 	FVector SpawnLocation = Character->GetActorLocation() + (Forward * SpawnOffset.Y) + (Right * UKismetMathLibrary::RandomFloatInRange(-SpawnOffset.X,SpawnOffset.X));
 	FRotator SpawnRotation = UKismetMathLibrary::MakeRotFromX(Forward);
 	SpawnRotation.Yaw += UKismetMathLibrary::RandomFloatInRange(-Spread.X, Spread.X);

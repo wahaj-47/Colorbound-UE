@@ -2,9 +2,14 @@
 
 
 #include "AbilitySystem/Core/ColorboundAbilitySystemGlobals.h"
-#include "AbilitySystem/Abilities/ColorboundAbilityTypes.h"
+#include "AbilitySystem/Core/ColorboundAbilityTypes.h"
 
 FGameplayAbilityActorInfo* UColorboundAbilitySystemGlobals::AllocAbilityActorInfo() const
 {
     return new FColorboundGameplayAbilityActorInfo();
+}
+
+FGameplayEffectContext* UColorboundAbilitySystemGlobals::AllocGameplayEffectContext() const
+{
+    return new FColorboundGameplayEffectContext();
 }

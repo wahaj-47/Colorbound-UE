@@ -2,6 +2,7 @@
 
 
 #include "Characters/ColorboundPlayerCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Core/ColorboundPlayerState.h"
 #include "AbilitySystem/Core/ColorboundAbilitySystemComponent.h"
 #include "AbilitySystem/Core/ColorboundAttributeSet.h"
@@ -42,6 +43,11 @@ void AColorboundPlayerCharacter::OnRep_PlayerState()
 
 AColorboundPlayerCharacter::AColorboundPlayerCharacter()
 {
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 1080.f);
+
+	bUseControllerRotationYaw = false;
+
 	AbilityQueueComponent = CreateDefaultSubobject<UAbilityQueueComponent>(TEXT("AbilityQueueComponent"));
 }
 
@@ -95,9 +101,6 @@ void AColorboundPlayerCharacter::InputAbilityInputTagReleased(FGameplayTag Input
 void AColorboundPlayerCharacter::Input_Move(const FInputActionValue& InputActionValue)
 {
 	FVector2D InputVector = InputActionValue.Get<FVector2D>();
-	FVector2D Direction = FVector2D(InputVector.Y, InputVector.X);
-	
-	SetDirectionality(Direction);
 	
 	AddMovementInput(FVector::RightVector, InputVector.X);
 	AddMovementInput(FVector::ForwardVector, InputVector.Y);

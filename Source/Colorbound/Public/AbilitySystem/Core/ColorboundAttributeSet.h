@@ -33,14 +33,16 @@ public:
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, Resilience);
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, Vigor);
 
-	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, DamageResistance);
+	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, Armor);
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, ArmorPenetration);
+	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, BlockChance);
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, CriticalHitChance);
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, CriticalHitDamage);
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, CriticalHitResistance);
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, HealthRegenRate)
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, MaxHealth)
 
+	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, DamageResistance);
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, Damage);
 
 protected:
@@ -64,10 +66,13 @@ protected:
 	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;
 
 	UFUNCTION()
-	void OnRep_DamageResistance(const FGameplayAttributeData& OldDamageResistance) const;
+	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
 
 	UFUNCTION()
 	void OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const;
+
+	UFUNCTION()
+	void OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const;
 
 	UFUNCTION()
 	void OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance) const;
@@ -83,6 +88,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
+
+	UFUNCTION()
+	void OnRep_DamageResistance(const FGameplayAttributeData& OldDamageResistance) const;
 
 private:
 	// --------------------------------------------------------------------
@@ -112,11 +120,14 @@ private:
 	//	Secondary Attributes
 	// --------------------------------------------------------------------
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DamageResistance, Category = "Colorbound|Attributes|Secondary", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData DamageResistance;
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Colorbound|Attributes|Secondary", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData Armor;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration, Category = "Colorbound|Attributes|Secondary", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData ArmorPenetration;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_BlockChance, Category = "Colorbound|Attributes|Secondary", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData BlockChance;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitChance, Category = "Colorbound|Attributes|Secondary", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData CriticalHitChance;
@@ -132,6 +143,13 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Colorbound|Attributes|Secondary", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxHealth;
+
+	// --------------------------------------------------------------------
+	//	Resistance Attribute
+	// --------------------------------------------------------------------
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DamageResistance, Category = "Colorbound|Attributes|Secondary", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData DamageResistance;
 
 	// --------------------------------------------------------------------
 	//	Meta Attribute (please keep attributes that aren't 'stateful' below 

@@ -15,6 +15,7 @@ class COLORBOUND_API UColorboundAbilitySystemGlobals : public UAbilitySystemGlob
 	GENERATED_BODY()
 
 	virtual FGameplayAbilityActorInfo* AllocAbilityActorInfo() const override;
+	virtual FGameplayEffectContext* AllocGameplayEffectContext() const override;
 
 	
 };

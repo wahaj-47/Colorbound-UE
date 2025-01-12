@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "PaperZDAnimInstance.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/Abilities/ColorboundAbilityTypes.h"
-#include "AbilitySystem/Abilities/GameplayAbilityRepAnimSequence.h"
+#include "AbilitySystem/Core/ColorboundAbilityTypes.h"
+#include "AbilitySystem/Core/GameplayAbilityRepAnimSequence.h"
 #include "ColorboundAbilitySystemComponent.generated.h"
 
 class UPaperZDAnimSequence;

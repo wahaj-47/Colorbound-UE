@@ -38,7 +38,7 @@ FVector UColorboundGameplayAbility_Dash::GetFurthestLocationAlongPath() const
 {
 	AColorboundCharacterBase* Character = GetColorboundCharacterFromActorInfo();
 	FVector Start = Character->GetActorLocation();
-	FVector End = Start + (Character->GetForwardVector() * MaxDashDistance);
+	FVector End = Start + (Character->GetActorForwardVector() * MaxDashDistance);
 
 	FVector Direction = (End - Start).GetSafeNormal();
 	float CapsuleRadius;

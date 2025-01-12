@@ -12,10 +12,15 @@
 #include "PaperZDAnimInstance.h"
 #include "Net/UnrealNetwork.h"
 
+AColorboundCharacterBase::AColorboundCharacterBase()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
 void AColorboundCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	SpriteMaterialInstance = GetSprite()->CreateDynamicMaterialInstance(0, SpriteMaterial);
 }
 
@@ -43,41 +48,6 @@ void AColorboundCharacterBase::InitializeAbilitySet()
 	}
 }
 
-void AColorboundCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME_CONDITION_NOTIFY(AColorboundCharacterBase, ForwardVector, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(AColorboundCharacterBase, RightVector, COND_None, REPNOTIFY_Always);
-}
-
-FVector AColorboundCharacterBase::GetForwardVector() const
-{
-	return ForwardVector;
-}
-
-FVector AColorboundCharacterBase::GetRightVector() const
-{
-	return RightVector;
-}
-
-void AColorboundCharacterBase::SetDirectionality(FVector2D Direction)
-{
-	Server_SetDirectionality(Direction);
-	UpdateDirectionality(Direction);
-}
-
-void AColorboundCharacterBase::Server_SetDirectionality_Implementation(FVector2D Direction)
-{
-	UpdateDirectionality(Direction);
-}
-
-void AColorboundCharacterBase::UpdateDirectionality(FVector2D Direction)
-{
-	ForwardVector = FVector(Direction.X, Direction.Y, 0);
-	RightVector = ForwardVector.RotateAngleAxis(90, FVector::UpVector);
-}
-
 UPaperZDAnimSequence* AColorboundCharacterBase::GetAnimationSequence(const FGameplayTagContainer& Rules) const
 {
 	for (const FColorboundAbilityAnimation& Rule : AnimationRules)
@@ -89,17 +59,4 @@ UPaperZDAnimSequence* AColorboundCharacterBase::GetAnimationSequence(const FGame
 	}
 
 	return nullptr;
-}
-
-void AColorboundCharacterBase::HitReact_Implementation()
-{
-	UPaperZDAnimSequence* Animation = GetAnimationSequence(FGameplayTagContainer(ColorboundGameplayTags::StatusTag_Hit));
-	UPaperZDAnimInstance* Instance = GetAnimInstance();
-
-	if (Animation && Instance)
-	{
-		Instance->PlayAnimationOverride(Animation);
-	}
-
-	K2_OnCharacterHit();
 }

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbilitySystem/Abilities/GameplayAbilityRepAnimSequence.h"
+#include "AbilitySystem/Core/GameplayAbilityRepAnimSequence.h"
 
 bool FGameplayAbilityRepAnimSequence::NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess)
 {

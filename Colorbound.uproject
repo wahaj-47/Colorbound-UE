@@ -16,7 +16,8 @@
 				"GameplayTags",
 				"BlueprintGraph",
 				"TargetingSystem",
-				"UMG"
+				"UMG",
+				"AIModule"
 			]
 		},
 		{

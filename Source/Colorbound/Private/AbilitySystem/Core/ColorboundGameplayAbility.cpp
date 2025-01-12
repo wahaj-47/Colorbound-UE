@@ -3,8 +3,15 @@
 
 #include "AbilitySystem/Core/ColorboundGameplayAbility.h"
 #include "AbilitySystem/Core/ColorboundAbilitySystemComponent.h"
-#include "AbilitySystem/Abilities/ColorboundAbilityTypes.h"
+#include "AbilitySystem/Core/ColorboundAbilityTypes.h"
 #include "Core/ColorboundCharacterBase.h"
+
+UColorboundGameplayAbility::UColorboundGameplayAbility(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+}
 
 void UColorboundGameplayAbility::TryActivateAbilityOnGranted(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) const
 {
@@ -55,6 +62,11 @@ UColorboundAbilitySystemComponent* UColorboundGameplayAbility::GetColorboundAbil
 const FColorboundGameplayAbilityActorInfo* UColorboundGameplayAbility::GetColorboundActorInfo(const FGameplayAbilityActorInfo* InActorInfo)
 {
 	return static_cast<const FColorboundGameplayAbilityActorInfo*>(InActorInfo);
+}
+
+float UColorboundGameplayAbility::GetScalableFloatValueAtLevel(const FScalableFloat& ScalableFloat, int32 Level) const
+{
+	return ScalableFloat.GetValueAtLevel(Level);
 }
 
 UPaperZDAnimSequence* UColorboundGameplayAbility::GetCurrentSequence() const

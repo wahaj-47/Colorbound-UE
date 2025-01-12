@@ -6,6 +6,9 @@
 #include "Core/ColorboundCharacterBase.h"
 #include "ColorboundEnemyCharacter.generated.h"
 
+class AColorboundAIController;
+class UBehaviorTree;
+
 /**
  * 
  */
@@ -15,9 +18,17 @@ class COLORBOUND_API AColorboundEnemyCharacter : public AColorboundCharacterBase
 	GENERATED_BODY()
 
 public:
-	AColorboundEnemyCharacter();	
+	AColorboundEnemyCharacter();
 
 protected:
 	virtual void BeginPlay() override;
-	
+
+	virtual void PossessedBy(AController* NewController) override;
+
+	UPROPERTY(EditAnywhere, Category = "Colorbound|AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<AColorboundAIController> ColorboundAIController;
+
 };

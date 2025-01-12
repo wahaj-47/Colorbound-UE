@@ -43,7 +43,9 @@ private:
 	TObjectPtr<UMaterialInstanceDynamic> SpriteMaterialInstance;
 
 public:
+	AColorboundCharacterBase();
 	virtual void BeginPlay() override;
+
 	// Implement IAbilitySystemInterface
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
@@ -54,34 +56,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Colorbound|Attributes")
 	int32 GetCharacterLevel() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Colorbound|Axis")
-	FVector GetForwardVector() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Colorbound|Axis")
-	FVector GetRightVector() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Colorbound|Axis")
-	void SetDirectionality(FVector2D Direction);
-
-	UFUNCTION(Server, Reliable, Category = "Colorbound|Axis")
-	void Server_SetDirectionality(FVector2D Direction);
-
 	UFUNCTION(BlueprintCallable, Category = "Colorbound|Abilities|Cosmetic")
 	UPaperZDAnimSequence* GetAnimationSequence(const FGameplayTagContainer& Rules) const;
 
-	UFUNCTION(NetMulticast, Unreliable)
-	void HitReact();
-	
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Abilities")
 	TArray<FColorboundAbilityAnimation> AnimationRules;
-
-	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Colorbound|Axis")
-	FVector ForwardVector = FVector(1,0,0);
-
-	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Colorbound|Axis")
-	FVector RightVector = FVector(0,-1,0);
 
 	UPROPERTY()
 	TObjectPtr<UColorboundAbilitySystemComponent> AbilitySystemComponent;
@@ -100,11 +81,4 @@ protected:
 	// the values should be the same.
 	virtual void InitializeAbilitySet();
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Colorbound|Abilities|Cosmetic", DisplayName = "OnCharacterHit")
-	void K2_OnCharacterHit();
-
-	UFUNCTION()
-	void UpdateDirectionality(FVector2D Direction);
 };

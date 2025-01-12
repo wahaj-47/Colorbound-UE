@@ -29,12 +29,12 @@ void AColorboundPlayerController::PostProcessInput(const float DeltaTime, const 
 	Super::PostProcessInput(DeltaTime, bGamePaused);
 }
 
-void AColorboundPlayerController::ShowDamageNumber_Implementation(float DamageAmount, AActor* TargetActor)
+void AColorboundPlayerController::ShowDamageNumber_Implementation(float DamageAmount, AActor* TargetActor, bool bBlockedHit, bool bCriticalHit)
 {
 	UObjectPoolWorldSubsystem* ObjectPool = GetPawn()->GetWorld()->GetSubsystem<UObjectPoolWorldSubsystem>();
 	
 	UDamageTextWidgetComponent* DamageText = Cast<UDamageTextWidgetComponent>(ObjectPool->AddPooledComponentByClass(TargetActor, DamageTextComponentClass, false, FTransform::Identity, true));
 	ObjectPool->FinishAddPooledComponent(TargetActor, DamageText, false, FTransform::Identity);
 
-	DamageText->SetDamageText(DamageAmount);
+	DamageText->SetDamageText(DamageAmount, bBlockedHit, bCriticalHit);
 }

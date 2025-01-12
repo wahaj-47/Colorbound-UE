@@ -59,7 +59,7 @@ struct FColorboundGameplayAbilityActorInfo : public FGameplayAbilityActorInfo
     UPaperZDAnimInstance* GetAnimInstance() const;
 };
 
-/** Data about montages that were played locally (all montages in case of server. predictive montages in case of client). Never replicated directly. */
+/** Data about animsequence that were played locally (all animsequence in case of server. predictive animsequence in case of client). Never replicated directly. */
 USTRUCT()
 struct FGameplayAbilityLocalAnimSequence
 {
@@ -85,4 +85,66 @@ struct FGameplayAbilityLocalAnimSequence
     /** The ability, if any, that instigated this seqeunce */
     UPROPERTY()
     TWeakObjectPtr<UGameplayAbility> AnimatingAbility;
+};
+
+USTRUCT(BlueprintType)
+struct FColorboundGameplayEffectContext : public FGameplayEffectContext
+{
+    GENERATED_USTRUCT_BODY()
+
+public:
+    FColorboundGameplayEffectContext()
+        : bBlockedHit(false), bCriticalHit(false)
+    {
+    }
+
+    FColorboundGameplayEffectContext(AActor* InInstigator, AActor* InEffectCauser)
+        : FGameplayEffectContext(InInstigator, InEffectCauser)
+        , bBlockedHit(false)
+        , bCriticalHit(false)
+    {
+    }
+
+
+    bool GetBlockedHit() const { return bBlockedHit; } 
+    bool GetCriticalHit() const { return bCriticalHit; }
+
+    void SetBlockedHit(bool bInBlockedHit) { bBlockedHit = bInBlockedHit; }
+    void SetCriticalHit(bool bInCriticalHit) { bCriticalHit = bInCriticalHit; }
+
+    virtual UScriptStruct* GetScriptStruct() const override { return StaticStruct(); }
+
+    /** Creates a copy of this context, used to duplicate for later modifications */
+    virtual FColorboundGameplayEffectContext* Duplicate() const
+    {
+        FColorboundGameplayEffectContext* NewContext = new FColorboundGameplayEffectContext();
+        *NewContext = *this;
+        if (GetHitResult())
+        {
+            // Does a deep copy of the hit result
+            NewContext->AddHitResult(*GetHitResult(), true);
+        }
+        return NewContext;
+    }
+
+    virtual bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess) override;
+
+protected:
+
+    UPROPERTY(NotReplicated)
+    uint8 bBlockedHit:1;
+
+    UPROPERTY(NotReplicated)
+    uint8 bCriticalHit:1;
+    
+};
+
+template<>
+struct TStructOpsTypeTraits< FColorboundGameplayEffectContext > : public TStructOpsTypeTraitsBase2< FColorboundGameplayEffectContext >
+{
+    enum
+    {
+        WithNetSerializer = true,
+        WithCopy = true		// Necessary so that TSharedPtr<FHitResult> Data is copied around
+    };
 };

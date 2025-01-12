@@ -26,7 +26,7 @@ public:
 	UColorboundAbilitySystemComponent* GetColorboundAbilitySystemComponent() const;
 
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(float DamageAmount, AActor* TargetActor);
+	void ShowDamageNumber(float DamageAmount, AActor* TargetActor, bool bBlockedHit, bool bCriticalHit);
 
 protected:
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
