@@ -4,6 +4,7 @@
 #include "Core/ColorboundPlayerState.h"
 #include "AbilitySystem/Core/ColorboundAbilitySystemComponent.h"
 #include "AbilitySystem/Core/ColorboundAttributeSet.h"
+#include "Net/UnrealNetwork.h"
 
 AColorboundPlayerState::AColorboundPlayerState()
 {
@@ -19,6 +20,15 @@ AColorboundPlayerState::AColorboundPlayerState()
 	AttributeSet = CreateDefaultSubobject<UColorboundAttributeSet>(TEXT("AttributeSet"));
 }
 
+void AColorboundPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AColorboundPlayerState, PlayerLevel);
+	DOREPLIFETIME(AColorboundPlayerState, PlayerXP);
+
+}
+
 UAbilitySystemComponent* AColorboundPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
@@ -27,4 +37,26 @@ UAbilitySystemComponent* AColorboundPlayerState::GetAbilitySystemComponent() con
 UColorboundAttributeSet* AColorboundPlayerState::GetAttributeSet() const
 {
 	return AttributeSet;
+}
+
+void AColorboundPlayerState::OnRep_PlayerLevel(int32 OldLevel)
+{
+	OnPlayerLevelChangedDelegate.Broadcast(PlayerLevel);
+}
+
+void AColorboundPlayerState::OnRep_PlayerXP(int32 OldXP)
+{
+	OnPlayerXPChangedDelegate.Broadcast(PlayerXP);
+}
+
+void AColorboundPlayerState::SetPlayerLevel(int32 InPlayerLevel)
+{
+	PlayerLevel = InPlayerLevel;
+	OnPlayerLevelChangedDelegate.Broadcast(PlayerLevel);
+}
+
+void AColorboundPlayerState::SetPlayerXP(int32 InPlayerXP)
+{
+	PlayerXP = InPlayerXP;
+	OnPlayerXPChangedDelegate.Broadcast(PlayerXP);
 }

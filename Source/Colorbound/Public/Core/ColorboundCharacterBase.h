@@ -16,6 +16,7 @@ class UColorboundAttributeSet;
 class UGameplayEffect;
 class UColorboundAbilitySet;
 class UPaperZDAnimSequence;
+class UViewModel_Character;
 
 USTRUCT(BlueprintType)
 struct FColorboundAbilityAnimation
@@ -39,6 +40,8 @@ class COLORBOUND_API AColorboundCharacterBase : public APaperZDCharacter, public
 
 private:
 
+	float BaseWalkSpeed;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Colorbound|Sprite", meta = (AllowPrivateAccess="true"))
 	TObjectPtr<UMaterialInstanceDynamic> SpriteMaterialInstance;
 
@@ -50,14 +53,21 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	virtual UColorboundAttributeSet* GetAttributeSet() const;
-	/**
-	* Getters for attributes from GDAttributeSetBase
-	**/
-	UFUNCTION(BlueprintCallable, Category = "Colorbound|Attributes")
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Colorbound|Attributes")
 	int32 GetCharacterLevel() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Colorbound|Attributes")
+	int32 GetCharacterXP() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Colorbound|Abilities|Cosmetic")
 	UPaperZDAnimSequence* GetAnimationSequence(const FGameplayTagContainer& Rules) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Colorbound|Character")
+	void Die();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Die();
 
 protected:
 
@@ -76,9 +86,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Colorbound|Sprite")
 	TObjectPtr<UMaterialInterface> SpriteMaterial;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Colorbound|Character|State")
+	bool bHitReacting = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Colorbound|Character|UI")
+	TObjectPtr<UViewModel_Character> CharacterViewModel;
+
 	// Initialize the Character's attributes. Must run on Server but we run it on Client too
 	// so that we don't have to wait. The Server's replication to the Client won't matter since
 	// the values should be the same.
 	virtual void InitializeAbilitySet();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Colorbound|Character")
+	void StartDeathTimeline();
+
+	virtual void HitTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 };

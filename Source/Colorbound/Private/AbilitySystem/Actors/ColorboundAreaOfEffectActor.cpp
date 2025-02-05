@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbilitySystem/Abilities/AoE/ColorboundAreaOfEffectActor.h"
+#include "AbilitySystem/Actors/ColorboundAreaOfEffectActor.h"
 #include "Characters/ColorboundEnemyCharacter.h"
 #include "AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"

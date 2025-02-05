@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Core/ColorboundCharacterBase.h"
+#include "BehaviorTree/BehaviorTreeTypes.h"
+#include "GameplayEffectTypes.h"
+#include "ScalableFloat.h"
 #include "ColorboundEnemyCharacter.generated.h"
 
 class AColorboundAIController;
@@ -17,18 +20,41 @@ class COLORBOUND_API AColorboundEnemyCharacter : public AColorboundCharacterBase
 {
 	GENERATED_BODY()
 
+
 public:
 	AColorboundEnemyCharacter();
 
+	int32 GetCharacterLevel_Implementation() const override;
+	int32 GetCharacterXP_Implementation() const override;
+
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Character")
+	int32 CharacterLevel = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Colorbound|Character")
+	FScalableFloat CharacterXP = FScalableFloat();
+
 	virtual void BeginPlay() override;
 
 	virtual void PossessedBy(AController* NewController) override;
+
+	virtual void HitTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 
 	UPROPERTY(EditAnywhere, Category = "Colorbound|AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 
 	UPROPERTY()
 	TObjectPtr<AColorboundAIController> ColorboundAIController;
+
+	// ----------------------------------------------------------------------------------------------------------------
+	//	Attribute changed delegates and handlers
+	// ----------------------------------------------------------------------------------------------------------------
+
+	FDelegateHandle HealthChangedDelegate;
+	void OnHealthChanged(const FOnAttributeChangeData& Data);
+
+	FDelegateHandle MaxHealthChangedDelegate;
+	void OnMaxHealthChanged(const FOnAttributeChangeData& Data);
+
 
 };

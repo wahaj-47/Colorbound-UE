@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbilitySystem/Abilities/Dash/ColorboundGameplayAbility_Dash.h"
+#include "AbilitySystem/Abilities/ColorboundGameplayAbility_Dash.h"
 #include "Core/ColorboundCharacterBase.h"
 #include "Components/CapsuleComponent.h"
 

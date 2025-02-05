@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbilitySystem/Abilities/Aura/ColorboundGameplayAbility_Aura.h"
+#include "AbilitySystem/Abilities/ColorboundGameplayAbility_Aura.h"
 #include "Components/SphereComponent.h"
 #include "Characters/ColorboundPlayerCharacter.h"
 #include "AbilitySystemBlueprintLibrary.h"

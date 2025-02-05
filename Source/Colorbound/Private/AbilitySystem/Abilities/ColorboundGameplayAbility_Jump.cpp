@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbilitySystem/Abilities/Jump/ColorboundGameplayAbility_Jump.h"
+#include "AbilitySystem/Abilities/ColorboundGameplayAbility_Jump.h"
 #include "Core/ColorboundCharacterBase.h"
 
 UColorboundGameplayAbility_Jump::UColorboundGameplayAbility_Jump(const FObjectInitializer& ObjectInitializer)

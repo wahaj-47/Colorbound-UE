@@ -142,6 +142,10 @@ void UColorboundAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 					}
 				}
 			}
+			else
+			{
+				TargetCharacter->Die();
+			}
 
 		}
 	}
@@ -149,6 +153,13 @@ void UColorboundAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
+
+	if (Data.EvaluatedData.Attribute == GetXPAttribute())
+	{
+		float InXP = GetXP();
+		SetXP(0.f);
+		UE_LOG(LogTemp, Warning, TEXT("XP attribute changed"));
 	}
 }
 

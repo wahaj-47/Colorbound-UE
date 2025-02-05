@@ -11,17 +11,22 @@
 #include "PaperZDAnimationComponent.h"
 #include "PaperZDAnimInstance.h"
 #include "Net/UnrealNetwork.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AColorboundCharacterBase::AColorboundCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	BaseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 }
 
 void AColorboundCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	SpriteMaterialInstance = GetSprite()->CreateDynamicMaterialInstance(0, SpriteMaterial);
+
+	AbilitySystemComponent->RegisterGameplayTagEvent(ColorboundGameplayTags::StatusTag_Hit, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::HitTagChanged);
 }
 
 UAbilitySystemComponent* AColorboundCharacterBase::GetAbilitySystemComponent() const
@@ -34,9 +39,14 @@ UColorboundAttributeSet* AColorboundCharacterBase::GetAttributeSet() const
 	return AttributeSet;
 }
 
-int32 AColorboundCharacterBase::GetCharacterLevel() const
+int32 AColorboundCharacterBase::GetCharacterLevel_Implementation() const
 {
 	return 1;
+}
+
+int32 AColorboundCharacterBase::GetCharacterXP_Implementation() const
+{
+	return 0;
 }
 
 void AColorboundCharacterBase::InitializeAbilitySet()
@@ -46,6 +56,12 @@ void AColorboundCharacterBase::InitializeAbilitySet()
 		UColorboundAbilitySystemComponent* ASC = CastChecked<UColorboundAbilitySystemComponent>(GetAbilitySystemComponent());
 		AbilitySet->GiveToAbilitySystem(ASC, nullptr, this);
 	}
+}
+
+void AColorboundCharacterBase::HitTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 }
 
 UPaperZDAnimSequence* AColorboundCharacterBase::GetAnimationSequence(const FGameplayTagContainer& Rules) const
@@ -59,4 +75,14 @@ UPaperZDAnimSequence* AColorboundCharacterBase::GetAnimationSequence(const FGame
 	}
 
 	return nullptr;
+}
+
+void AColorboundCharacterBase::Die()
+{
+	Multicast_Die();
+}
+
+void AColorboundCharacterBase::Multicast_Die_Implementation()
+{
+	StartDeathTimeline();
 }

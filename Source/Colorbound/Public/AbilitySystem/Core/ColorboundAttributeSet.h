@@ -43,7 +43,9 @@ public:
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, MaxHealth)
 
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, DamageResistance);
+	
 	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, Damage);
+	ATTRIBUTE_ACCESSORS(UColorboundAttributeSet, XP);
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -158,5 +160,9 @@ private:
 	// Incoming damage. This is mapped directly to -Health
 	UPROPERTY(BlueprintReadOnly, Category = "Colorbound|Meta Attributes", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Damage;
+
+	// Incoming XP. This is mapped directly to +XP
+	UPROPERTY(BlueprintReadOnly, Category = "Colorbound|Meta Attributes", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData XP;
 
 };

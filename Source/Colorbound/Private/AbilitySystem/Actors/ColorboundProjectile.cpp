@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbilitySystem/Abilities/Ranged/ColorboundProjectile.h"
+#include "AbilitySystem/Actors/ColorboundProjectile.h"
 #include "Characters/ColorboundEnemyCharacter.h"
 #include "AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"

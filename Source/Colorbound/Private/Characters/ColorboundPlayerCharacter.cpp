@@ -41,6 +41,20 @@ void AColorboundPlayerCharacter::OnRep_PlayerState()
 	InitializeAbilitySet();
 }
 
+int32 AColorboundPlayerCharacter::GetCharacterLevel_Implementation() const
+{
+	AColorboundPlayerState* ColorboundPlayerState = GetPlayerState<AColorboundPlayerState>();
+	check(ColorboundPlayerState);
+	return ColorboundPlayerState->GetPlayerLevel();
+}
+
+int32 AColorboundPlayerCharacter::GetCharacterXP_Implementation() const
+{
+	AColorboundPlayerState* ColorboundPlayerState = GetPlayerState<AColorboundPlayerState>();
+	check(ColorboundPlayerState);
+	return ColorboundPlayerState->GetPlayerXP();
+}
+
 AColorboundPlayerCharacter::AColorboundPlayerCharacter()
 {
 	GetCharacterMovement()->bOrientRotationToMovement = true;

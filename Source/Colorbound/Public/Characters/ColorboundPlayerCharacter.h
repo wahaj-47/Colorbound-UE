@@ -39,6 +39,9 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
+	int32 GetCharacterLevel_Implementation() const override;
+	int32 GetCharacterXP_Implementation() const override;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InputSystem|Input")
 	UColorboundInputConfig* InputConfig;
