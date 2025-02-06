@@ -5,6 +5,7 @@
 #include "AbilitySystem/Core/ColorboundAttributeSet.h"
 #include "Core/ColorboundCharacterBase.h"
 #include "AbilitySystem/Core/ColorboundAbilityTypes.h"
+#include "Interfaces/CharacterStatsInterface.h"
 
 struct FDamageStatics
 {
@@ -107,13 +108,13 @@ void UColorboundDamageCalculation::Execute_Implementation(const FGameplayEffectC
 		SourceArmorPenetration = FMath::Max<float>(SourceArmorPenetration, 0.f);
 
 		const FRealCurve* ArmorPenetrationCurve = DamageCalculationCoefficients->FindCurve(FName("ArmorPenetration"), FString());
-		const float ArmorPenetrationCoefficient = ArmorPenetrationCurve->Eval(SourceActor->GetCharacterLevel());
+		const float ArmorPenetrationCoefficient = ArmorPenetrationCurve->Eval(ICharacterStatsInterface::Execute_GetCharacterLevel(SourceActor));
 
 		// ArmorPenetration ignores a percentage of the Target's Armor
 		const float EffectiveArmor = TargetArmor * (100.f - SourceArmorPenetration * ArmorPenetrationCoefficient) / 100.f;
 
 		const FRealCurve* EffectiveArmorCurve = DamageCalculationCoefficients->FindCurve(FName("EffectiveArmor"), FString());
-		const float EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(TargetActor->GetCharacterLevel());
+		const float EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(ICharacterStatsInterface::Execute_GetCharacterLevel(TargetActor));
 
 		// Armor ignores a percentage of the incoming damage
 		Damage *= (100 - EffectiveArmor * EffectiveArmorCoefficient) / 100.f;
@@ -131,7 +132,7 @@ void UColorboundDamageCalculation::Execute_Implementation(const FGameplayEffectC
 		TargetCriticalHitResistance = FMath::Max<float>(TargetCriticalHitResistance, 0.f);
 
 		const FRealCurve* CriticalHitResistanceCurve = DamageCalculationCoefficients->FindCurve(FName("CriticalHitResistance"), FString());
-		const float CriticalHitResistanceCoefficient = CriticalHitResistanceCurve->Eval(TargetActor->GetCharacterLevel());
+		const float CriticalHitResistanceCoefficient = CriticalHitResistanceCurve->Eval(ICharacterStatsInterface::Execute_GetCharacterLevel(TargetActor));
 
 		// CriticalHitResistance reduces CriticalHitChance by a percentage
 		const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance * CriticalHitResistanceCoefficient;

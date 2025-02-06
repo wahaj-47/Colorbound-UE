@@ -39,8 +39,11 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
-	int32 GetCharacterLevel_Implementation() const override;
-	int32 GetCharacterXP_Implementation() const override;
+
+	// Character Stats Interface
+	virtual int32 GetCharacterLevel_Implementation() const override;
+	virtual int32 GetCharacterXP_Implementation() const override;
+	// end Character Stats Interface
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InputSystem|Input")

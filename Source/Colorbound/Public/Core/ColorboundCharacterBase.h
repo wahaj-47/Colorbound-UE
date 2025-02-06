@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PaperZDCharacter.h"
 #include "AbilitySystemInterface.h"
+#include "Interfaces/CharacterStatsInterface.h"
 #include "GameplayTagContainer.h"
 #include "ColorboundCharacterBase.generated.h"
 
@@ -34,7 +35,7 @@ struct FColorboundAbilityAnimation
  * 
  */
 UCLASS()
-class COLORBOUND_API AColorboundCharacterBase : public APaperZDCharacter, public IAbilitySystemInterface
+class COLORBOUND_API AColorboundCharacterBase : public APaperZDCharacter, public IAbilitySystemInterface, public ICharacterStatsInterface
 {
 	GENERATED_BODY()
 
@@ -53,12 +54,6 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	virtual UColorboundAttributeSet* GetAttributeSet() const;
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Colorbound|Attributes")
-	int32 GetCharacterLevel() const;
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Colorbound|Attributes")
-	int32 GetCharacterXP() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Colorbound|Abilities|Cosmetic")
 	UPaperZDAnimSequence* GetAnimationSequence(const FGameplayTagContainer& Rules) const;

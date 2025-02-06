@@ -107,7 +107,9 @@ void UColorboundAbilitySet::GiveToAbilitySystem(UColorboundAbilitySystemComponen
 		}
 
 		const UGameplayEffect* GameplayEffect = EffectToGrant.GameplayEffect->GetDefaultObject<UGameplayEffect>();
-		const FActiveGameplayEffectHandle GameplayEffectHandle = ColorboundASC->ApplyGameplayEffectToSelf(GameplayEffect, EffectToGrant.EffectLevel, ColorboundASC->MakeEffectContext());
+		FGameplayEffectContextHandle EffectContext = ColorboundASC->MakeEffectContext();
+		EffectContext.AddSourceObject(SourceObject);
+		const FActiveGameplayEffectHandle GameplayEffectHandle = ColorboundASC->ApplyGameplayEffectToSelf(GameplayEffect, EffectToGrant.EffectLevel, EffectContext);
 
 		if (OutGrantedHandles)
 		{

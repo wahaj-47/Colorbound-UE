@@ -39,16 +39,6 @@ UColorboundAttributeSet* AColorboundCharacterBase::GetAttributeSet() const
 	return AttributeSet;
 }
 
-int32 AColorboundCharacterBase::GetCharacterLevel_Implementation() const
-{
-	return 1;
-}
-
-int32 AColorboundCharacterBase::GetCharacterXP_Implementation() const
-{
-	return 0;
-}
-
 void AColorboundCharacterBase::InitializeAbilitySet()
 {
 	if (AbilitySet)

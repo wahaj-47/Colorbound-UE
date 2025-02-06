@@ -2,9 +2,9 @@
 
 
 #include "AbilitySystem/Core/MaxHealthModMagnitudeCalculation.h"
-
 #include "AbilitySystem/Core/ColorboundAttributeSet.h"
 #include "Core/ColorboundCharacterBase.h"
+#include "Interfaces/CharacterStatsInterface.h"
 
 UMaxHealthModMagnitudeCalculation::UMaxHealthModMagnitudeCalculation()
 {
@@ -29,8 +29,12 @@ float UMaxHealthModMagnitudeCalculation::CalculateBaseMagnitude_Implementation(c
 	GetCapturedAttributeMagnitude(VigorDef, Spec, EvaluationParameters, Vigor);
 	Vigor = FMath::Max<float>(Vigor, 0.f);
 
-	AColorboundCharacterBase* Character = Cast<AColorboundCharacterBase>(Spec.GetContext().GetSourceObject());
-	const int32 PlayerLevel = Character->GetCharacterLevel();
+	int32 CharacterLevel = 1;
+	UObject* SourceObject = Spec.GetContext().GetSourceObject();
+	if (SourceObject->Implements<UCharacterStatsInterface>())
+	{
+		CharacterLevel = ICharacterStatsInterface::Execute_GetCharacterLevel(SourceObject);
+	}
 
-	return 80.f + 2.5f * Vigor + 10.f * PlayerLevel;
+	return 80.f + 2.5f * Vigor + 10.f * CharacterLevel;
 }

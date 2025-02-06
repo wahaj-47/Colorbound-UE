@@ -18,6 +18,12 @@ UObjectPoolWorldSubsystem::UObjectPoolWorldSubsystem()
 void UObjectPoolWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	UObjectPoolConfig* Config = ObjectPoolConfig.LoadSynchronous();
+
+	if (Config == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ObjectPoolConfig not found. Assign the object pool config data asset in project settings"));
+		return;
+	}
 	
 	for (FActorPoolInfo ActorPoolInfo : Config->ActorPools)
 	{

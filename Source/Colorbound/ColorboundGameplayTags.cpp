@@ -13,4 +13,5 @@ namespace ColorboundGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AbilityTag_HitReact, "Ability.HitReact", "Hit React Ability.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AbilityTag_Knockback, "Ability.Knockback", "Knockback Ability.");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_IncomingXP, "Attribute.Meta.IncomingXP", "Incoming XP.");
 }
