@@ -7,15 +7,12 @@
 #include "AI/ColorboundAIController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "UI/ViewModels/ViewModel_Character.h"
-#include "UI/ViewModels/ViewModel_Health.h"
 
 AColorboundEnemyCharacter::AColorboundEnemyCharacter()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UColorboundAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 	AttributeSet = CreateDefaultSubobject<UColorboundAttributeSet>(TEXT("AttributeSet"));
-	CharacterViewModel = CreateDefaultSubobject<UViewModel_Character>(TEXT("CharacterViewModel"));
 }
 
 int32 AColorboundEnemyCharacter::GetCharacterLevel_Implementation() const
@@ -33,13 +30,6 @@ void AColorboundEnemyCharacter::BeginPlay()
 	Super::BeginPlay();
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	InitializeAbilitySet();
-
-	HealthChangedDelegate = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ThisClass::OnHealthChanged);
-	MaxHealthChangedDelegate = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &ThisClass::OnMaxHealthChanged);
-
-	CharacterViewModel->GetCurrentHealthViewModel()->SetCurrentHealth(AttributeSet->GetHealth());
-	CharacterViewModel->GetCurrentHealthViewModel()->SetMaxHealth(AttributeSet->GetMaxHealth());
-
 }
 
 void AColorboundEnemyCharacter::PossessedBy(AController* NewController)
@@ -65,14 +55,4 @@ void AColorboundEnemyCharacter::HitTagChanged(const FGameplayTag CallbackTag, in
 	{
 		ColorboundAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 	}
-}
-
-void AColorboundEnemyCharacter::OnHealthChanged(const FOnAttributeChangeData& Data)
-{
-	CharacterViewModel->GetCurrentHealthViewModel()->SetCurrentHealth(Data.NewValue);
-}
-
-void AColorboundEnemyCharacter::OnMaxHealthChanged(const FOnAttributeChangeData& Data)
-{
-	CharacterViewModel->GetCurrentHealthViewModel()->SetMaxHealth(Data.NewValue);
 }

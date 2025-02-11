@@ -25,8 +25,8 @@ public:
 	int32 GetCurrentHealth() const;
 	void SetCurrentHealth(int32 NewCurrentHealth);
 
-	void SetMaxHealth(int32 NewMaxHealth);
 	int32 GetMaxHealth() const;
+	void SetMaxHealth(int32 NewMaxHealth);
 	
 	UFUNCTION(BlueprintPure, FieldNotify)
 	float GetHealthPercent() const;

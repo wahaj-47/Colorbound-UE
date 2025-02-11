@@ -41,7 +41,8 @@ UColorboundAttributeSet* AColorboundPlayerState::GetAttributeSet() const
 
 void AColorboundPlayerState::OnRep_PlayerLevel(int32 OldLevel)
 {
-	OnPlayerLevelChangedDelegate.Broadcast(PlayerLevel);
+	int32 LevelUpRequirement = static_cast<int32>(LevelUpInfo.LevelUpRequirement.GetValueAtLevel(PlayerLevel));
+	OnPlayerLevelChangedDelegate.Broadcast(PlayerLevel, LevelUpRequirement);
 }
 
 void AColorboundPlayerState::OnRep_PlayerXP(int32 OldXP)
@@ -52,11 +53,43 @@ void AColorboundPlayerState::OnRep_PlayerXP(int32 OldXP)
 void AColorboundPlayerState::SetPlayerLevel(int32 InPlayerLevel)
 {
 	PlayerLevel = InPlayerLevel;
-	OnPlayerLevelChangedDelegate.Broadcast(PlayerLevel);
+	int32 LevelUpRequirement = static_cast<int32>(LevelUpInfo.LevelUpRequirement.GetValueAtLevel(PlayerLevel));
+	OnPlayerLevelChangedDelegate.Broadcast(PlayerLevel, LevelUpRequirement);
 }
 
 void AColorboundPlayerState::SetPlayerXP(int32 InPlayerXP)
 {
 	PlayerXP = InPlayerXP;
 	OnPlayerXPChangedDelegate.Broadcast(PlayerXP);
+}
+
+void AColorboundPlayerState::AddToPlayerLevel(int32 InPlayerLevel)
+{
+	PlayerLevel += InPlayerLevel;
+	int32 LevelUpRequirement = static_cast<int32>(LevelUpInfo.LevelUpRequirement.GetValueAtLevel(PlayerLevel));
+	OnPlayerLevelChangedDelegate.Broadcast(PlayerLevel, LevelUpRequirement);
+}
+
+void AColorboundPlayerState::AddToPlayerXP(int32 InPlayerXP)
+{
+	PlayerXP += InPlayerXP;
+	OnPlayerXPChangedDelegate.Broadcast(PlayerXP);
+}
+
+int32 FColorboundLevelUpInfo::FindLevelForXP(int32 XP) const
+{
+	int32 Level = 1;
+	bool bSearching = false;
+	while (bSearching)
+	{
+		if (XP >= LevelUpRequirement.GetValueAtLevel(Level))
+		{
+			++Level;
+		}
+		else
+		{
+			bSearching = false;
+		}
+	}
+	return Level;
 }

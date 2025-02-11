@@ -7,6 +7,7 @@
 #include "ViewModel_Character.generated.h"
 
 class UViewModel_Health;
+class UViewModel_Stats;
 
 /**
  * 
@@ -20,10 +21,16 @@ private:
 	UPROPERTY(BlueprintReadWrite, FieldNotify, Setter, Getter, meta = (AllowPrivateAccess))
 	TObjectPtr<UViewModel_Health> CurrentHealthViewModel;
 
+	UPROPERTY(BlueprintReadWrite, FieldNotify, Setter, Getter, meta = (AllowPrivateAccess))
+	TObjectPtr<UViewModel_Stats> CurrentStatsViewModel;
+
 public:
 	UViewModel_Character();
 
 	UViewModel_Health* GetCurrentHealthViewModel() const;
 	void SetCurrentHealthViewModel(UViewModel_Health* NewHealthViewModel);
+
+	UViewModel_Stats* GetCurrentStatsViewModel() const;
+	void SetCurrentStatsViewModel(UViewModel_Stats* NewStatsViewModel);
 	
 };

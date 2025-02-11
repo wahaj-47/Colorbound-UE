@@ -9,6 +9,8 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include "ColorboundGameplayTags.h"
+#include "Interfaces/CharacterStatsInterface.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 UColorboundAttributeSet::UColorboundAttributeSet()
 {
@@ -145,6 +147,14 @@ void UColorboundAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 			else
 			{
 				TargetCharacter->Die();
+				
+				int32 XPReward = ICharacterStatsInterface::Execute_GetCharacterXP(TargetCharacter);
+
+				FGameplayEventData Payload;
+				Payload.EventTag = ColorboundGameplayTags::Attribute_IncomingXP;
+				Payload.EventMagnitude = XPReward;
+
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(SourceActor, ColorboundGameplayTags::Attribute_IncomingXP, Payload);
 			}
 
 		}
@@ -159,7 +169,24 @@ void UColorboundAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMod
 	{
 		float InXP = GetXP();
 		SetXP(0.f);
-		UE_LOG(LogTemp, Warning, TEXT("XP attribute changed"));
+		
+		if (SourceCharacter && SourceCharacter->Implements<UCharacterStatsInterface>())
+		{
+			int32 CurrentLevel = ICharacterStatsInterface::Execute_GetCharacterLevel(SourceCharacter);
+			int32 CurrentXP = ICharacterStatsInterface::Execute_GetCharacterXP(SourceCharacter);
+
+			int32 NewLevel = ICharacterStatsInterface::Execute_FindLevelForXP(SourceCharacter, CurrentXP + InXP);
+			int32 NumLevelUps = NewLevel - CurrentLevel;
+
+			if (NumLevelUps > 0)
+			{
+				ICharacterStatsInterface::Execute_AddToCharacterLevel(SourceCharacter, NumLevelUps);
+				ICharacterStatsInterface::Execute_LevelUp(SourceCharacter);
+				SetHealth(GetMaxHealth());
+			}
+
+			ICharacterStatsInterface::Execute_AddToCharacterXP(SourceCharacter, InXP);
+		}
 	}
 }
 

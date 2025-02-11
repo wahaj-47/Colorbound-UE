@@ -9,7 +9,8 @@
 #include "ScalableFloat.h"
 #include "ColorboundPlayerState.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /*StatValue*/)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /*StatValue*/);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerLevelChanged, int32 /* NewLevel */, int32 /* NewLevelUpRequirements */);
 
 class UColorboundAbilitySystemComponent;
 class UColorboundAttributeSet;
@@ -21,6 +22,8 @@ struct FColorboundLevelUpInfo
 
 	UPROPERTY(EditDefaultsOnly)
 	FScalableFloat LevelUpRequirement = FScalableFloat();
+
+	int32 FindLevelForXP(int32 XP) const;
 
 };
 
@@ -40,7 +43,7 @@ private:
 	void OnRep_PlayerLevel(int32 OldLevel);
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_PlayerXP)
-	int32 PlayerXP = 1;
+	int32 PlayerXP = 0;
 
 	UFUNCTION()
 	void OnRep_PlayerXP(int32 OldXP);
@@ -57,7 +60,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	FColorboundLevelUpInfo LevelUpInfo;
 
-	FOnPlayerStatChanged OnPlayerLevelChangedDelegate;
+	FOnPlayerLevelChanged OnPlayerLevelChangedDelegate;
 	FOnPlayerStatChanged OnPlayerXPChangedDelegate;
 
 	AColorboundPlayerState();
@@ -76,5 +79,8 @@ public:
 
 	void SetPlayerLevel(int32 InPlayerLevel);
 	void SetPlayerXP(int32 InPlayerXP);
+
+	void AddToPlayerLevel(int32 InPlayerLevel);
+	void AddToPlayerXP(int32 InPlayerXP);
 
 };

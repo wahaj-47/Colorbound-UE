@@ -39,10 +39,15 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
-
 	// Character Stats Interface
+	virtual void LevelUp_Implementation() override;
 	virtual int32 GetCharacterLevel_Implementation() const override;
+	virtual void SetCharacterLevel_Implementation(int32 InLevel) override;
+	virtual void AddToCharacterLevel_Implementation(int32 InLevel) override;
 	virtual int32 GetCharacterXP_Implementation() const override;
+	virtual void SetCharacterXP_Implementation(int32 InXP) override;
+	virtual void AddToCharacterXP_Implementation(int32 InXP) override;
+	virtual int32 FindLevelForXP_Implementation(int32 XP) const override;
 	// end Character Stats Interface
 
 protected:
@@ -54,5 +59,8 @@ protected:
 
 	UFUNCTION()
 	void Input_Move(const FInputActionValue& InputActionValue);
+
+	void OnXPChanged(int32 NewXP);
+	void OnLevelChanged(int32 NewLevel, int32 NewLevelUpRequirement);
 
 };

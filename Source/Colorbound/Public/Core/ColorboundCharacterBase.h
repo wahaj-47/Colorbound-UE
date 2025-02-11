@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "Interfaces/CharacterStatsInterface.h"
 #include "GameplayTagContainer.h"
+#include "GameplayEffectTypes.h"
 #include "ColorboundCharacterBase.generated.h"
 
 class UMaterialInterface;
@@ -96,5 +97,15 @@ protected:
 	void StartDeathTimeline();
 
 	virtual void HitTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+	// ----------------------------------------------------------------------------------------------------------------
+	//	Attribute changed delegates and handlers
+	// ----------------------------------------------------------------------------------------------------------------
+
+	FDelegateHandle HealthChangedDelegate;
+	void OnHealthChanged(const FOnAttributeChangeData& Data);
+
+	FDelegateHandle MaxHealthChangedDelegate;
+	void OnMaxHealthChanged(const FOnAttributeChangeData& Data);
 
 };

@@ -13,6 +13,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "UI/ViewModels/ViewModel_Character.h"
+#include "UI/ViewModels/ViewModel_Stats.h"
 
 void AColorboundPlayerCharacter::InitAbilitySystemComponent()
 {
@@ -41,6 +43,11 @@ void AColorboundPlayerCharacter::OnRep_PlayerState()
 	InitializeAbilitySet();
 }
 
+void AColorboundPlayerCharacter::LevelUp_Implementation()
+{
+	// TODO: Cosmetic effects on level up
+}
+
 int32 AColorboundPlayerCharacter::GetCharacterLevel_Implementation() const
 {
 	AColorboundPlayerState* ColorboundPlayerState = GetPlayerState<AColorboundPlayerState>();
@@ -48,11 +55,46 @@ int32 AColorboundPlayerCharacter::GetCharacterLevel_Implementation() const
 	return ColorboundPlayerState->GetPlayerLevel();
 }
 
+void AColorboundPlayerCharacter::SetCharacterLevel_Implementation(int32 InLevel)
+{
+	AColorboundPlayerState* ColorboundPlayerState = GetPlayerState<AColorboundPlayerState>();
+	check(ColorboundPlayerState);
+	return ColorboundPlayerState->SetPlayerLevel(InLevel);
+}
+
+void AColorboundPlayerCharacter::AddToCharacterLevel_Implementation(int32 InLevel)
+{
+	AColorboundPlayerState* ColorboundPlayerState = GetPlayerState<AColorboundPlayerState>();
+	check(ColorboundPlayerState);
+	return ColorboundPlayerState->AddToPlayerLevel(InLevel);
+}
+
 int32 AColorboundPlayerCharacter::GetCharacterXP_Implementation() const
 {
 	AColorboundPlayerState* ColorboundPlayerState = GetPlayerState<AColorboundPlayerState>();
 	check(ColorboundPlayerState);
 	return ColorboundPlayerState->GetPlayerXP();
+}
+
+void AColorboundPlayerCharacter::SetCharacterXP_Implementation(int32 InXP)
+{
+	AColorboundPlayerState* ColorboundPlayerState = GetPlayerState<AColorboundPlayerState>();
+	check(ColorboundPlayerState);
+	return ColorboundPlayerState->SetPlayerXP(InXP);
+}
+
+void AColorboundPlayerCharacter::AddToCharacterXP_Implementation(int32 InXP)
+{
+	AColorboundPlayerState* ColorboundPlayerState = GetPlayerState<AColorboundPlayerState>();
+	check(ColorboundPlayerState);
+	return ColorboundPlayerState->AddToPlayerXP(InXP);
+}
+
+int32 AColorboundPlayerCharacter::FindLevelForXP_Implementation(int32 XP) const
+{
+	AColorboundPlayerState* ColorboundPlayerState = GetPlayerState<AColorboundPlayerState>();
+	check(ColorboundPlayerState);
+	return ColorboundPlayerState->LevelUpInfo.FindLevelForXP(XP);
 }
 
 AColorboundPlayerCharacter::AColorboundPlayerCharacter()
@@ -100,6 +142,17 @@ void AColorboundPlayerCharacter::SetupPlayerInputComponent(UInputComponent* Play
 void AColorboundPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AColorboundPlayerState* PS = GetPlayerState<AColorboundPlayerState>();
+	PS->OnPlayerXPChangedDelegate.AddUObject(this, &ThisClass::OnXPChanged);
+	PS->OnPlayerLevelChangedDelegate.AddUObject(this, &ThisClass::OnLevelChanged);
+
+	UViewModel_Stats* StatsViewModel = CharacterViewModel->GetCurrentStatsViewModel();
+	int32 PlayerLevel = PS->GetPlayerLevel();
+
+	StatsViewModel->SetCurrentXP(PS->GetPlayerXP());
+	StatsViewModel->SetCurrentLevel(PlayerLevel);
+	StatsViewModel->SetCurrentLevelUpRequirement(PS->LevelUpInfo.LevelUpRequirement.GetValueAtLevel(PlayerLevel));
 }
 
 void AColorboundPlayerCharacter::InputAbilityInputTagPressed(FGameplayTag InputTag)
@@ -118,4 +171,15 @@ void AColorboundPlayerCharacter::Input_Move(const FInputActionValue& InputAction
 	
 	AddMovementInput(FVector::RightVector, InputVector.X);
 	AddMovementInput(FVector::ForwardVector, InputVector.Y);
+}
+
+void AColorboundPlayerCharacter::OnXPChanged(int32 NewXP)
+{
+	CharacterViewModel->GetCurrentStatsViewModel()->SetCurrentXP(NewXP);
+}
+
+void AColorboundPlayerCharacter::OnLevelChanged(int32 NewLevel, int32 NewLevelUpRequirement)
+{
+	CharacterViewModel->GetCurrentStatsViewModel()->SetCurrentLevel(NewLevel);
+	CharacterViewModel->GetCurrentStatsViewModel()->SetCurrentLevelUpRequirement(NewLevelUpRequirement);
 }

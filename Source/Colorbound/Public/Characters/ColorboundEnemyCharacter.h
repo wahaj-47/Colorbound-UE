@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Core/ColorboundCharacterBase.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
-#include "GameplayEffectTypes.h"
 #include "ScalableFloat.h"
 #include "ColorboundEnemyCharacter.generated.h"
 
@@ -47,16 +46,5 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<AColorboundAIController> ColorboundAIController;
-
-	// ----------------------------------------------------------------------------------------------------------------
-	//	Attribute changed delegates and handlers
-	// ----------------------------------------------------------------------------------------------------------------
-
-	FDelegateHandle HealthChangedDelegate;
-	void OnHealthChanged(const FOnAttributeChangeData& Data);
-
-	FDelegateHandle MaxHealthChangedDelegate;
-	void OnMaxHealthChanged(const FOnAttributeChangeData& Data);
-
 
 };

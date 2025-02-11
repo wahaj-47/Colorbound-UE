@@ -12,12 +12,15 @@
 #include "PaperZDAnimInstance.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UI/ViewModels/ViewModel_Character.h"
+#include "UI/ViewModels/ViewModel_Health.h"
 
 AColorboundCharacterBase::AColorboundCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	BaseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	CharacterViewModel = CreateDefaultSubobject<UViewModel_Character>(TEXT("CharacterViewModel"));
 }
 
 void AColorboundCharacterBase::BeginPlay()
@@ -27,6 +30,12 @@ void AColorboundCharacterBase::BeginPlay()
 	SpriteMaterialInstance = GetSprite()->CreateDynamicMaterialInstance(0, SpriteMaterial);
 
 	AbilitySystemComponent->RegisterGameplayTagEvent(ColorboundGameplayTags::StatusTag_Hit, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::HitTagChanged);
+	
+	HealthChangedDelegate = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ThisClass::OnHealthChanged);
+	MaxHealthChangedDelegate = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &ThisClass::OnMaxHealthChanged);
+
+	CharacterViewModel->GetCurrentHealthViewModel()->SetCurrentHealth(AttributeSet->GetHealth());
+	CharacterViewModel->GetCurrentHealthViewModel()->SetMaxHealth(AttributeSet->GetMaxHealth());
 }
 
 UAbilitySystemComponent* AColorboundCharacterBase::GetAbilitySystemComponent() const
@@ -46,12 +55,6 @@ void AColorboundCharacterBase::InitializeAbilitySet()
 		UColorboundAbilitySystemComponent* ASC = CastChecked<UColorboundAbilitySystemComponent>(GetAbilitySystemComponent());
 		AbilitySet->GiveToAbilitySystem(ASC, nullptr, this);
 	}
-}
-
-void AColorboundCharacterBase::HitTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
-	bHitReacting = NewCount > 0;
-	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 }
 
 UPaperZDAnimSequence* AColorboundCharacterBase::GetAnimationSequence(const FGameplayTagContainer& Rules) const
@@ -74,5 +77,22 @@ void AColorboundCharacterBase::Die()
 
 void AColorboundCharacterBase::Multicast_Die_Implementation()
 {
+	SetActorEnableCollision(false);
 	StartDeathTimeline();
+}
+
+void AColorboundCharacterBase::HitTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+}
+
+void AColorboundCharacterBase::OnHealthChanged(const FOnAttributeChangeData& Data)
+{
+	CharacterViewModel->GetCurrentHealthViewModel()->SetCurrentHealth(Data.NewValue);
+}
+
+void AColorboundCharacterBase::OnMaxHealthChanged(const FOnAttributeChangeData& Data)
+{
+	CharacterViewModel->GetCurrentHealthViewModel()->SetMaxHealth(Data.NewValue);
 }
