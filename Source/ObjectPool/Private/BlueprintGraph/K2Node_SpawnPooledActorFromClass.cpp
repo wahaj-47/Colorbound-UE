@@ -279,7 +279,7 @@ void UK2Node_SpawnPooledActorFromClass::FixupScaleMethodPin()
 			const UEnum* const ScaleMethodEnum = StaticEnum<ESpawnActorScaleMethod>();
 			if (const UClass* Class = Cast<UClass>(ClassPin->DefaultObject))
 			{
-				if (const AActor* ActorCDO = Cast<AActor>(Class->ClassDefaultObject))
+				if (const AActor* ActorCDO = GetDefault<AActor>(Class))
 				{
 					if (const USceneComponent* Root = ActorCDO->GetRootComponent()) // native root component
 					{
